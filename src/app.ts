@@ -1,21 +1,19 @@
-import { connectDb, disconnectDb, loadEnv } from "@/config";
 import express, { Express } from 'express';
 import cors from 'cors';
+import { connectDb, disconnectDb, loadEnv } from '@/config';
 
-loadEnv()
+loadEnv();
 
 const app = express();
-app
-    .use(cors())
-    .use(express.json())
+app.use(cors()).use(express.json());
 
 export function init(): Promise<Express> {
-    connectDb();
-    return Promise.resolve(app);
+  connectDb();
+  return Promise.resolve(app);
 }
 
 export async function close(): Promise<void> {
-    await disconnectDb();
+  await disconnectDb();
 }
 
 export default app;

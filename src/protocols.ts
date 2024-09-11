@@ -1,5 +1,5 @@
 export type ApplicationError = {
-    name: string;
-    message: string;
-    details?: string[];
-  };
+  name: string;
+  message: string;
+  details?: string[];
+};
