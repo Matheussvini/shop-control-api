@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  type      UserType  @default(cliente)
+  Client    Client?
+
+  @@map("users")
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  fullName  String
+  contact   String   @db.VarChar(11)
+  status    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
+  Addresses Address[]
+  Orders    Order[]  
+
+  @@map("clients")
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  clientId   Int
+  cep        String   @db.VarChar(8)
+  logradouro String
+  numero     String
+  complemento String?
+  bairro     String
+  cidade     String
+  estado     String   @db.VarChar(2)
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Client     Client   @relation(fields: [clientId], references: [id])
+
+  @@map("address")
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String
+  description String
+  price      Float
+  stock      Int
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Items      Item[]
+
+  @@map("products")
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  clientId   Int
+  status     OrderStatus @default(RECEBIDO)
+  total      Decimal
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Client     Client   @relation(fields: [clientId], references: [id])
+  Items      Item[]
+
+  @@map("orders")
+}
+
+model Item {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  quantity   Int
+  price      Decimal
+  subtotal   Decimal
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Order      Order    @relation(fields: [orderId], references: [id])
+  Product    Product  @relation(fields: [productId], references: [id])
+
+  @@map("items")
+}
+
+model Report {
+  id         Int      @id @default(autoincrement())
+  period     DateTime
+  totalSales Decimal
+  totalOrders Int
+  path       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("reports")
+}
+
+enum UserType {
+  admin
+  cliente
+}
+
+enum OrderStatus {
+  RECEBIDO        @map("Recebido")
+  EM_PREPARACAO   @map("Em preparação")
+  DESPACHADO      @map("Despachado")
+  ENTREGUE        @map("Entregue")
+}
+
