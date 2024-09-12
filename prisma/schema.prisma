@@ -31,6 +31,7 @@ model Client {
   User      User     @relation(fields: [userId], references: [id])
   Addresses Address[]
   Orders    Order[]  
+  CartItems CartItem[]
 
   @@map("clients")
 }
@@ -64,6 +65,7 @@ model Product {
   updatedAt  DateTime @updatedAt
   Items      Item[]
   Images     Image[]
+  CartItems  CartItem[]
 
   @@map("products")
 }
@@ -103,7 +105,6 @@ model Report {
   totalOrders Int
   path       String
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
   @@map("reports")
 }
@@ -112,11 +113,22 @@ model Image {
   id         Int      @id @default(autoincrement())
   productId  Int
   path       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
   Product    Product  @relation(fields: [productId], references: [id])
 
   @@map("images")
+}
+
+model CartItem {
+  id         Int      @id @default(autoincrement())
+  clientId   Int    
+  productId  Int
+  quantity   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Client     Client   @relation(fields: [clientId], references: [id])
+  Product    Product  @relation(fields: [productId], references: [id])
+
+  @@map("cart_items")
 }
 
 enum UserType {
