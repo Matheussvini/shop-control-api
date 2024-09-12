@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import nodemailer from 'nodemailer';
-import { CreateUserInput } from '@/schemas';
-import { conflictError, unauthorizedError } from '@/errors';
+import { CreateUserInput, LoginInput } from '@/schemas';
+import { conflictError, invalidCredentialsError, unauthorizedError } from '@/errors';
 import { userRepository } from '@/repositories';
 
 async function validateUniqueUserData({ email }: Pick<User, 'email'>) {
@@ -86,8 +86,23 @@ async function confirmEmail(token: string) {
     type,
   });
 }
+async function login({ email, password }: LoginInput): Promise<UserWithToken> {
+  const user = await userRepository.findByEmail(email);
+  if (!user) throw invalidCredentialsError('Invalid email or password');
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) throw invalidCredentialsError('Invalid email or password');
+
+  const data = { userId: user.id };
+  const token = jwt.sign(data, process.env.JWT_SECRET as string, { expiresIn: '1d' });
+  delete user.password;
+
+  return { ...user, token };
+}
+export type UserWithToken = Omit<User, 'password'> & { token: string };
 
 export const userService = {
   create,
   confirmEmail,
+  login,
 };

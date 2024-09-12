@@ -8,5 +8,12 @@ export const createUserSchema = Joi.object<CreateUserInput>({
   password: Joi.string().min(6).required(),
 });
 
+export const loginSchema = Joi.object<LoginInput>({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
 type OmitUser = Omit<User, keyof AutoProperty>;
 export type CreateUserInput = Omit<OmitUser, 'type'> & Partial<Pick<User, 'type'>>;
+
+export type LoginInput = Pick<User, 'email' | 'password'>;
