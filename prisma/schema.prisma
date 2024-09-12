@@ -63,6 +63,7 @@ model Product {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   Items      Item[]
+  Images     Image[]
 
   @@map("products")
 }
@@ -105,6 +106,17 @@ model Report {
   updatedAt  DateTime @updatedAt
 
   @@map("reports")
+}
+
+model Image {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  path       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Product    Product  @relation(fields: [productId], references: [id])
+
+  @@map("images")
 }
 
 enum UserType {
