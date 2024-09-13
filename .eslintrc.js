@@ -12,8 +12,9 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     'import/newline-after-import': ['error'],
     'lines-between-class-members': ['error', 'always'],
-    '@typescript-eslint/no-unused-vars': ['warn'], // Ajuste para warning
-    'no-unused-vars': 'off', // Desative a regra padrão para evitar conflitos
+    '@typescript-eslint/no-unused-vars': ['warn'],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn', // Emite um aviso ao usar `any`
   },
   settings: {
     'import/parsers': {
