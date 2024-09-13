@@ -22,7 +22,14 @@ export const getAllSchema = Joi.object<GetAllUsersParams>({
   type: Joi.string().valid('cliente', 'admin'),
 });
 
+export const updateUserSchema = Joi.object({
+  username: Joi.string().min(3).optional(),
+  email: Joi.string().email().optional(),
+}).or('username', 'email');
+
 type OmitUser = Omit<User, keyof AutoProperty>;
 export type CreateUserInput = Omit<OmitUser, 'type'> & Partial<Pick<User, 'type'>>;
 
 export type LoginInput = Pick<User, 'email' | 'password'>;
+
+export type UpdateUserInput = Partial<Pick<User, 'username' | 'email'>>;

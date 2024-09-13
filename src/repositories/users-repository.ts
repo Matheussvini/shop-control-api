@@ -36,6 +36,13 @@ export async function count(where?: Prisma.UserWhereInput) {
   return prisma.user.count({ where });
 }
 
+export async function update(id: number, data: Prisma.UserUpdateInput) {
+  return prisma.user.update({
+    where: { id },
+    data,
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -48,4 +55,5 @@ export const userRepository = {
   create,
   findMany,
   count,
+  update,
 };

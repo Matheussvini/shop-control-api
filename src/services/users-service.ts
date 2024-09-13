@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Prisma, User } from '@prisma/client';
 import nodemailer from 'nodemailer';
-import { CreateUserInput, LoginInput } from '@/schemas';
+import { CreateUserInput, LoginInput, UpdateUserInput } from '@/schemas';
 import { conflictError, invalidCredentialsError, notFoundError, unauthorizedError } from '@/errors';
 import { userRepository } from '@/repositories';
 
@@ -128,6 +128,20 @@ async function getById(id: number) {
   return user;
 }
 
+async function update(id: number, data: UpdateUserInput) {
+  const user = await getById(id);
+  if (!user) throw notFoundError('User not found');
+
+  if (data.email && data.email !== user.email) {
+    await validateUniqueUserData({
+      email: data.email,
+    });
+  }
+  const updatedUser = await userRepository.update(id, data);
+  delete updatedUser.password;
+  return updatedUser;
+}
+
 export type UserWithToken = Omit<User, 'password'> & { token: string };
 
 export interface GetAllUsersParams {
@@ -144,4 +158,5 @@ export const userService = {
   login,
   getAll,
   getById,
+  update,
 };

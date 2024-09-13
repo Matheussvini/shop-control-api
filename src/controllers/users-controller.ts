@@ -96,3 +96,23 @@ export async function getById(req: AuthenticatedRequest, res: Response, next: Ne
     next(error);
   }
 }
+
+export async function update(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { username, email } = req.body;
+  const { id: userId, type } = req.user;
+
+  try {
+    if (type !== 'admin' && Number(id) !== userId) {
+      throw unauthorizedError("You don't have permission to update other user");
+    }
+
+    const updatedUser = await userService.update(Number(id), {
+      username,
+      email,
+    });
+    return res.status(httpStatus.OK).send(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+}
