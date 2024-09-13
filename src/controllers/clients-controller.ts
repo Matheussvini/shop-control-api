@@ -33,3 +33,15 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
     next(error);
   }
 }
+
+export async function getClientById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { user } = req;
+  try {
+    const client = await clientService.getById(Number(id), user);
+
+    return res.status(httpStatus.OK).send(client);
+  } catch (error) {
+    next(error);
+  }
+}

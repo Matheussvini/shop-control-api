@@ -46,6 +46,24 @@ async function findMany(params: FindManyParams) {
   });
 }
 
+async function findById(id: number) {
+  const client = await prisma.client.findUnique({
+    where: { id },
+    include: {
+      Addresses: {
+        where: { status: true },
+        take: 1,
+      },
+    },
+  });
+
+  const { Addresses, ...clientData } = client;
+  return {
+    ...clientData,
+    address: Addresses[0] || null,
+  };
+}
+
 async function count(where?: Prisma.ClientWhereInput) {
   return prisma.client.count({ where });
 }
@@ -61,5 +79,6 @@ export const clientRepository = {
   updateAddressesStatusToFalse,
   createClientWithAddress,
   findMany,
+  findById,
   count,
 };

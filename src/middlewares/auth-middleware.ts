@@ -41,8 +41,9 @@ export async function authAdminValidation(req: AuthenticatedRequest, res: Respon
 }
 
 export type AuthenticatedRequest = Request & {
-  user: Omit<User, 'password'>;
+  user: SecuryUser;
 };
+export type SecuryUser = Omit<User, 'password'>;
 
 type JwtPayload = {
   userId: number;

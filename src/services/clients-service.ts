@@ -1,8 +1,9 @@
-import { Client, Prisma } from '@prisma/client';
-import { conflictError } from '@/errors';
+import { Client, Prisma, User } from '@prisma/client';
+import { conflictError, notFoundError, unauthorizedError } from '@/errors';
 import { CreateClientInput } from '@/schemas';
 import { clientRepository } from '@/repositories';
 import { Pagination } from '@/types';
+import { SecuryUser } from '@/middlewares';
 
 async function validateUniqueClient(userId: number): Promise<void> {
   const checkClient = await clientRepository.findByUserId(userId);
@@ -37,6 +38,20 @@ async function getAll({ page, limit, fullName, contact, status }: GetAllClientsP
   return { data: clients, total, page, limit };
 }
 
+async function validateUser(clientId: number, user: SecuryUser) {
+  const client = await clientRepository.findByUserId(user.id);
+  if (user.type !== 'admin' && client?.id !== clientId)
+    throw unauthorizedError("You don't have permission to access other user");
+}
+
+async function getById(id: number, user: SecuryUser) {
+  await validateUser(id, user);
+
+  const client = await clientRepository.findById(id);
+  if (!client) throw notFoundError('Client not found');
+  return client;
+}
+
 export type GetAllClientsParams = Pagination & {
   fullName?: string;
   contact?: string;
@@ -46,4 +61,5 @@ export type GetAllClientsParams = Pagination & {
 export const clientService = {
   create,
   getAll,
+  getById,
 };
