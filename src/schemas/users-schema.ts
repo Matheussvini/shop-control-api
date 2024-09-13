@@ -27,7 +27,16 @@ export const updateUserSchema = Joi.object({
   email: Joi.string().email().optional(),
 }).or('username', 'email');
 
+export const changePasswordSchema = Joi.object({
+  oldPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+  confirmPassword: Joi.any().valid(Joi.ref('newPassword')).required().messages({
+    'any.only': 'Passwords do not match',
+  }),
+});
+
 type OmitUser = Omit<User, keyof AutoProperty>;
+
 export type CreateUserInput = Omit<OmitUser, 'type'> & Partial<Pick<User, 'type'>>;
 
 export type LoginInput = Pick<User, 'email' | 'password'>;

@@ -130,7 +130,6 @@ async function getById(id: number) {
 
 async function update(id: number, data: UpdateUserInput) {
   const user = await getById(id);
-  if (!user) throw notFoundError('User not found');
 
   if (data.email && data.email !== user.email) {
     await validateUniqueUserData({
@@ -143,10 +142,22 @@ async function update(id: number, data: UpdateUserInput) {
 }
 
 async function deleteById(id: number) {
-  const user = await getById(id);
-  if (!user) throw notFoundError('User not found');
+  await getById(id);
 
   await userRepository.deleteById(id);
+}
+
+async function changePassword(id: number, userId: number, oldPassword: string, newPassword: string) {
+  const user = await userRepository.findById(userId);
+  if (!user) throw notFoundError('User not found');
+
+  if (user.id !== id) throw unauthorizedError('You do not have permission to change another user password');
+
+  const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordValid) throw invalidCredentialsError('Invalid password');
+
+  const hashPassword = await bcrypt.hash(newPassword, 12);
+  await userRepository.update(id, { password: hashPassword });
 }
 
 export type UserWithToken = Omit<User, 'password'> & { token: string };
@@ -167,4 +178,5 @@ export const userService = {
   getById,
   update,
   deleteById,
+  changePassword,
 };

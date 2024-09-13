@@ -132,3 +132,19 @@ export async function deleteById(req: AuthenticatedRequest, res: Response, next:
     next(error);
   }
 }
+
+export async function changePassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { id } = req.params;
+  const { id: userId } = req.user;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  try {
+    await userService.changePassword(Number(id), userId, oldPassword, newPassword);
+
+    return res.status(httpStatus.OK).send({
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
