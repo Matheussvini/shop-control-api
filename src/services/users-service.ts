@@ -118,7 +118,7 @@ async function getAll({ page, limit, username, email, type }: GetAllUsersParams)
     userRepository.count(filters),
   ]);
 
-  return { users, total, page, limit };
+  return { data: users, total, page, limit };
 }
 
 async function getById(id: number) {

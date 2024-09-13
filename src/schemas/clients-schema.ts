@@ -1,6 +1,6 @@
-import { Address, Client } from '@prisma/client';
+import { Address, Client, Prisma } from '@prisma/client';
 import Joi from 'joi';
-import { AutoProperty } from '@/types';
+import { AutoProperty, Pagination } from '@/types';
 
 export const createClientSchema = Joi.object<CreateClientInput>({
   userId: Joi.number().min(1).required(),
@@ -15,6 +15,14 @@ export const createClientSchema = Joi.object<CreateClientInput>({
     cidade: Joi.string().min(3).max(255).required(),
     estado: Joi.string().length(2).required(),
   }).required(),
+});
+
+export const getAllClientsSchema = Joi.object<Prisma.ClientWhereInput & Pagination>({
+  page: Joi.number().min(1),
+  limit: Joi.number().min(1),
+  fullName: Joi.string().min(3),
+  contact: Joi.string().min(10),
+  status: Joi.boolean(),
 });
 
 type OmitClient = Omit<Client, keyof AutoProperty | 'status'>;

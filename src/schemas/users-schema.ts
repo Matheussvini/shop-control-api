@@ -14,11 +14,11 @@ export const loginSchema = Joi.object<LoginInput>({
   password: Joi.string().min(6).required(),
 });
 
-export const getAllSchema = Joi.object<GetAllUsersParams>({
+export const getAllUserSchema = Joi.object<GetAllUsersParams>({
   page: Joi.number().min(1),
   limit: Joi.number().min(1),
-  username: Joi.string().min(3),
-  email: Joi.string().email(),
+  username: Joi.string(),
+  email: Joi.string(),
   type: Joi.string().valid('cliente', 'admin'),
 });
 

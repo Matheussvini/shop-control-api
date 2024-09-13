@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateClientInput } from '@/schemas';
 
 const prisma = new PrismaClient();
@@ -34,8 +34,32 @@ async function createClientWithAddress(data: CreateClientInput) {
   });
 }
 
+async function findMany(params: FindManyParams) {
+  return await prisma.client.findMany({
+    ...params,
+    select: {
+      id: true,
+      fullName: true,
+      contact: true,
+      status: true,
+    },
+  });
+}
+
+async function count(where?: Prisma.ClientWhereInput) {
+  return prisma.client.count({ where });
+}
+
+type FindManyParams = {
+  skip?: number;
+  take?: number;
+  where?: Prisma.ClientWhereInput;
+};
+
 export const clientRepository = {
   findByUserId,
   updateAddressesStatusToFalse,
   createClientWithAddress,
+  findMany,
+  count,
 };

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authAdminValidation, authValidation, validateBody, validateQuery } from '@/middlewares';
-import { changePasswordSchema, createUserSchema, getAllSchema, loginSchema, updateUserSchema } from '@/schemas';
+import { changePasswordSchema, createUserSchema, getAllUserSchema, loginSchema, updateUserSchema } from '@/schemas';
 import {
   changePassword,
   confirmEmail,
@@ -29,6 +29,6 @@ usersRouter
   .put('/password/:id', validateBody(changePasswordSchema), changePassword)
   .all('/*', authAdminValidation)
   .post('/admin', validateBody(createUserSchema), createAdmin)
-  .get('/', validateQuery(getAllSchema), getAll);
+  .get('/', validateQuery(getAllUserSchema), getAll);
 
 export { usersRouter };
