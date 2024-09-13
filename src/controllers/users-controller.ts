@@ -24,13 +24,8 @@ export async function create(req: Request, res: Response, next: NextFunction): P
 
 export async function createAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { username, email, password } = req.body;
-  const { user } = req;
 
   try {
-    if (user.type !== 'admin') {
-      throw unauthorizedError('You do not have permission to create an admin user');
-    }
-    console.log('else', user);
     await userService.create({
       username,
       email,
