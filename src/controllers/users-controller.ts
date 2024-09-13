@@ -116,3 +116,19 @@ export async function update(req: AuthenticatedRequest, res: Response, next: Nex
     next(error);
   }
 }
+
+export async function deleteById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { id: userId, type } = req.user;
+
+  try {
+    if (type !== 'admin' && Number(id) !== userId) {
+      throw unauthorizedError("You don't have permission to delete other user");
+    }
+
+    await userService.deleteById(Number(id));
+    return res.status(httpStatus.NO_CONTENT).send(`User with id ${id} deleted successfully`);
+  } catch (error) {
+    next(error);
+  }
+}

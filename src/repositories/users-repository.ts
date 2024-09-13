@@ -32,14 +32,20 @@ async function findMany(params: FindManyParams) {
   });
 }
 
-export async function count(where?: Prisma.UserWhereInput) {
+async function count(where?: Prisma.UserWhereInput) {
   return prisma.user.count({ where });
 }
 
-export async function update(id: number, data: Prisma.UserUpdateInput) {
+async function update(id: number, data: Prisma.UserUpdateInput) {
   return prisma.user.update({
     where: { id },
     data,
+  });
+}
+
+async function deleteById(id: number) {
+  return prisma.user.delete({
+    where: { id },
   });
 }
 
@@ -56,4 +62,5 @@ export const userRepository = {
   findMany,
   count,
   update,
+  deleteById,
 };

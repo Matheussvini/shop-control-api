@@ -142,6 +142,13 @@ async function update(id: number, data: UpdateUserInput) {
   return updatedUser;
 }
 
+async function deleteById(id: number) {
+  const user = await getById(id);
+  if (!user) throw notFoundError('User not found');
+
+  await userRepository.deleteById(id);
+}
+
 export type UserWithToken = Omit<User, 'password'> & { token: string };
 
 export interface GetAllUsersParams {
@@ -159,4 +166,5 @@ export const userService = {
   getAll,
   getById,
   update,
+  deleteById,
 };
