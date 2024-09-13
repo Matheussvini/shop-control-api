@@ -10,17 +10,19 @@ export function validateParams<T>(schema: ObjectSchema<T>): ValidationMiddleware
   return validate(schema, 'params');
 }
 
-function validate(schema: ObjectSchema, type: 'body' | 'params') {
+export function validateQuery<T>(schema: ObjectSchema<T>): ValidationMiddleware {
+  return validate(schema, 'query');
+}
+
+function validate(schema: ObjectSchema, type: 'body' | 'params' | 'query'): ValidationMiddleware {
   return (req: Request, res: Response, next: NextFunction) => {
     const { error } = schema.validate(req[type], {
       abortEarly: false,
+      convert: true,
     });
 
-    if (!error) {
-      next();
-    } else {
-      throw invalidDataError(error.details.map((d) => d.message));
-    }
+    if (error) throw invalidDataError(error.details.map((d) => d.message));
+    next();
   };
 }
 
