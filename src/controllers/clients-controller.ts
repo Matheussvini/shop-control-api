@@ -1,7 +1,9 @@
 import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
-import { AuthenticatedRequest } from '@/middlewares';
+import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 import { clientService, GetAllClientsParams } from '@/services';
+import { clientRepository } from '@/repositories';
+import { unauthorizedError } from '@/errors';
 
 export async function createClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   try {
@@ -34,13 +36,35 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
   }
 }
 
+async function validateUser(clientId: number, user: SecuryUser) {
+  const client = await clientRepository.findByUserId(user.id);
+  if (user.type !== 'admin' && client?.id !== clientId)
+    throw unauthorizedError("You don't have permission to access other user");
+}
+
 export async function getClientById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
   const { user } = req;
   try {
-    const client = await clientService.getById(Number(id), user);
+    await validateUser(Number(id), user);
+    const client = await clientService.getById(Number(id));
 
     return res.status(httpStatus.OK).send(client);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { fullName, contact } = req.body;
+  const { user } = req;
+
+  try {
+    await validateUser(Number(id), user);
+    const updatedClient = await clientService.update(Number(id), { fullName, contact });
+
+    return res.status(httpStatus.OK).send(updatedClient);
   } catch (error) {
     next(error);
   }

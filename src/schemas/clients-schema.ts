@@ -25,6 +25,11 @@ export const getAllClientsSchema = Joi.object<Prisma.ClientWhereInput & Paginati
   status: Joi.boolean(),
 });
 
+export const updateClientSchema = Joi.object({
+  fullName: Joi.string().min(3).optional(),
+  contact: Joi.string().min(10).optional(),
+}).or('fullName', 'contact');
+
 type OmitClient = Omit<Client, keyof AutoProperty | 'status'>;
 export type CreateClientInput = OmitClient & {
   address: Omit<Address, keyof AutoProperty>;

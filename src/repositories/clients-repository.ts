@@ -68,6 +68,13 @@ async function count(where?: Prisma.ClientWhereInput) {
   return prisma.client.count({ where });
 }
 
+async function update(id: number, data: Prisma.ClientUpdateInput) {
+  return prisma.client.update({
+    where: { id },
+    data,
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -81,4 +88,5 @@ export const clientRepository = {
   findMany,
   findById,
   count,
+  update,
 };
