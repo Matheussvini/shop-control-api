@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import nodemailer from 'nodemailer';
 import { CreateUserInput, LoginInput } from '@/schemas';
 import { conflictError, invalidCredentialsError, unauthorizedError } from '@/errors';
@@ -99,10 +99,41 @@ async function login({ email, password }: LoginInput): Promise<UserWithToken> {
 
   return { ...user, token };
 }
+
+async function getAll({ page, limit, username, email, type }: GetAllUsersParams) {
+  const offset = (page - 1) * limit;
+  const filters: Prisma.UserWhereInput = {};
+
+  if (username) filters.username = { contains: username, mode: 'insensitive' };
+  if (email) filters.email = { contains: email, mode: 'insensitive' };
+  if (type) {
+    filters.type = type as User['type'];
+  }
+  const [users, total] = await Promise.all([
+    userRepository.findMany({
+      skip: offset,
+      take: limit,
+      where: filters,
+    }),
+    userRepository.count(filters),
+  ]);
+
+  return { users, total, page, limit };
+}
+
 export type UserWithToken = Omit<User, 'password'> & { token: string };
+
+export interface GetAllUsersParams {
+  page: number;
+  limit: number;
+  username?: string;
+  email?: string;
+  type?: string;
+}
 
 export const userService = {
   create,
   confirmEmail,
   login,
+  getAll,
 };

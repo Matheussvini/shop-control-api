@@ -68,3 +68,20 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 }
+
+export async function getAll(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { page = 1, limit = 10, username, email, type } = req.query;
+
+  try {
+    const users = await userService.getAll({
+      page: Number(page),
+      limit: Number(limit),
+      username: username as string,
+      email: email as string,
+      type: type as string,
+    });
+    return res.status(httpStatus.OK).send(users);
+  } catch (error) {
+    next(error);
+  }
+}

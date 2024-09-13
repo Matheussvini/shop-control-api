@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { User } from '@prisma/client';
 import { AutoProperty } from '@/types';
+import { GetAllUsersParams } from '@/services';
 
 export const createUserSchema = Joi.object<CreateUserInput>({
   username: Joi.string().min(3).max(30).required(),
@@ -11,6 +12,14 @@ export const createUserSchema = Joi.object<CreateUserInput>({
 export const loginSchema = Joi.object<LoginInput>({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+});
+
+export const getAllSchema = Joi.object<GetAllUsersParams>({
+  page: Joi.number().min(1),
+  limit: Joi.number().min(1),
+  username: Joi.string().min(3),
+  email: Joi.string().email(),
+  type: Joi.string().valid('cliente', 'admin'),
 });
 
 type OmitUser = Omit<User, keyof AutoProperty>;

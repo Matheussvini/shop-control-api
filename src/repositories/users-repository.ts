@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/config';
 import { CreateUserInput } from '@/schemas';
 
@@ -19,8 +20,32 @@ async function create(data: CreateUserInput) {
   });
 }
 
+async function findMany(params: FindManyParams) {
+  return await prisma.user.findMany({
+    ...params,
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      type: true,
+    },
+  });
+}
+
+export async function count(where?: Prisma.UserWhereInput) {
+  return prisma.user.count({ where });
+}
+
+type FindManyParams = {
+  skip?: number;
+  take?: number;
+  where?: Prisma.UserWhereInput;
+};
+
 export const userRepository = {
   findByEmail,
   findById,
   create,
+  findMany,
+  count,
 };

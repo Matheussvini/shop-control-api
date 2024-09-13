@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authValidation, validateBody } from '@/middlewares';
-import { createUserSchema, loginSchema } from '@/schemas';
-import { confirmEmail, create, createAdmin, login } from '@/controllers';
+import { authValidation, validateBody, validateQuery } from '@/middlewares';
+import { createUserSchema, getAllSchema, loginSchema } from '@/schemas';
+import { confirmEmail, create, createAdmin, getAll, login } from '@/controllers';
 
 const usersRouter = Router();
 
@@ -13,6 +13,7 @@ usersRouter
   .post('/', validateBody(createUserSchema), create)
   .get('/confirm-email/:token', confirmEmail)
   .all('/*', authValidation)
-  .post('/admin', validateBody(createUserSchema), createAdmin);
+  .post('/admin', validateBody(createUserSchema), createAdmin)
+  .get('/', validateQuery(getAllSchema), getAll);
 
 export { usersRouter };
