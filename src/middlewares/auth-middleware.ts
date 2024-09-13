@@ -22,6 +22,11 @@ export async function authValidation(req: AuthenticatedRequest, res: Response, n
     req.user = user;
     next();
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      next(unauthorizedError('Authentication token expired'));
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      next(unauthorizedError('Authentication token invalid'));
+    }
     next(error);
   }
 }
