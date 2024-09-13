@@ -85,3 +85,14 @@ export async function getAll(req: AuthenticatedRequest, res: Response, next: Nex
     next(error);
   }
 }
+
+export async function getById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+
+  try {
+    const user = await userService.getById(Number(id));
+    return res.status(httpStatus.OK).send(user);
+  } catch (error) {
+    next(error);
+  }
+}

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Prisma, User } from '@prisma/client';
 import nodemailer from 'nodemailer';
 import { CreateUserInput, LoginInput } from '@/schemas';
-import { conflictError, invalidCredentialsError, unauthorizedError } from '@/errors';
+import { conflictError, invalidCredentialsError, notFoundError, unauthorizedError } from '@/errors';
 import { userRepository } from '@/repositories';
 
 async function validateUniqueUserData({ email }: Pick<User, 'email'>) {
@@ -121,6 +121,13 @@ async function getAll({ page, limit, username, email, type }: GetAllUsersParams)
   return { users, total, page, limit };
 }
 
+async function getById(id: number) {
+  const user = await userRepository.findById(id);
+  if (!user) throw notFoundError('User not found');
+  delete user.password;
+  return user;
+}
+
 export type UserWithToken = Omit<User, 'password'> & { token: string };
 
 export interface GetAllUsersParams {
@@ -136,4 +143,5 @@ export const userService = {
   confirmEmail,
   login,
   getAll,
+  getById,
 };
