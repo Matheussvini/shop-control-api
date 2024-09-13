@@ -31,6 +31,7 @@ export const updateClientSchema = Joi.object({
 }).or('fullName', 'contact');
 
 type OmitClient = Omit<Client, keyof AutoProperty | 'status'>;
+
 export type CreateClientInput = OmitClient & {
   address: Omit<Address, keyof AutoProperty>;
 };

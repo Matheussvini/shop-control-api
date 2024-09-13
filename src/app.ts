@@ -1,7 +1,8 @@
+import path from 'path';
 import express, { Express } from 'express';
 import cors from 'cors';
 import { connectDb, disconnectDb, loadEnv } from '@/config';
-import { clientsRouter, usersRouter } from '@/routers';
+import { clientsRouter, productsRouter, usersRouter } from '@/routers';
 import { handleApplicationErrors } from '@/middlewares';
 
 loadEnv();
@@ -12,6 +13,7 @@ app
   .use(express.json())
   .use('/users', usersRouter)
   .use('/clients', clientsRouter)
+  .use('/products', productsRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
