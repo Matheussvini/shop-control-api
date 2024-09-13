@@ -31,9 +31,19 @@ export async function authValidation(req: AuthenticatedRequest, res: Response, n
   }
 }
 
+export async function authAdminValidation(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    if (req.user && req.user.type !== 'admin') throw unauthorizedError('Unauthorized access');
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 export type AuthenticatedRequest = Request & {
-  user: Omit<User, 'password'>;
+  user: SecuryUser;
 };
+export type SecuryUser = Omit<User, 'password'>;
 
 type JwtPayload = {
   userId: number;

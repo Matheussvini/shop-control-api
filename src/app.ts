@@ -1,13 +1,18 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import { connectDb, disconnectDb, loadEnv } from '@/config';
-import { usersRouter } from '@/routers';
+import { clientsRouter, usersRouter } from '@/routers';
 import { handleApplicationErrors } from '@/middlewares';
 
 loadEnv();
 
 const app = express();
-app.use(cors()).use(express.json()).use('/users', usersRouter).use(handleApplicationErrors);
+app
+  .use(cors())
+  .use(express.json())
+  .use('/users', usersRouter)
+  .use('/clients', clientsRouter)
+  .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
   connectDb();

@@ -6,3 +6,8 @@ export type TimeStamps = {
 export type AutoProperty = TimeStamps & {
   id: number;
 };
+
+export type Pagination = {
+  page: number;
+  limit: number;
+};

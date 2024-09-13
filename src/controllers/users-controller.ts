@@ -24,13 +24,8 @@ export async function create(req: Request, res: Response, next: NextFunction): P
 
 export async function createAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { username, email, password } = req.body;
-  const { user } = req;
 
   try {
-    if (user.type !== 'admin') {
-      throw unauthorizedError('You do not have permission to create an admin user');
-    }
-    console.log('else', user);
     await userService.create({
       username,
       email,
@@ -86,10 +81,19 @@ export async function getAll(req: AuthenticatedRequest, res: Response, next: Nex
   }
 }
 
+async function validateUser(id: number, userId: number, type: string): Promise<void> {
+  if (type !== 'admin' && id !== userId) {
+    throw unauthorizedError("You don't have permission to access other user");
+  }
+}
+
 export async function getById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
+  const { id: userId, type } = req.user;
 
   try {
+    await validateUser(Number(id), userId, type);
+
     const user = await userService.getById(Number(id));
     return res.status(httpStatus.OK).send(user);
   } catch (error) {
@@ -103,9 +107,7 @@ export async function update(req: AuthenticatedRequest, res: Response, next: Nex
   const { id: userId, type } = req.user;
 
   try {
-    if (type !== 'admin' && Number(id) !== userId) {
-      throw unauthorizedError("You don't have permission to update other user");
-    }
+    await validateUser(Number(id), userId, type);
 
     const updatedUser = await userService.update(Number(id), {
       username,
@@ -122,9 +124,7 @@ export async function deleteById(req: AuthenticatedRequest, res: Response, next:
   const { id: userId, type } = req.user;
 
   try {
-    if (type !== 'admin' && Number(id) !== userId) {
-      throw unauthorizedError("You don't have permission to delete other user");
-    }
+    await validateUser(Number(id), userId, type);
 
     await userService.deleteById(Number(id));
     return res.status(httpStatus.NO_CONTENT).send(`User with id ${id} deleted successfully`);
@@ -136,7 +136,7 @@ export async function deleteById(req: AuthenticatedRequest, res: Response, next:
 export async function changePassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { id } = req.params;
   const { id: userId } = req.user;
-  const { oldPassword, newPassword, confirmPassword } = req.body;
+  const { oldPassword, newPassword } = req.body;
 
   try {
     await userService.changePassword(Number(id), userId, oldPassword, newPassword);
