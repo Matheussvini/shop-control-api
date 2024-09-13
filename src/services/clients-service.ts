@@ -47,6 +47,10 @@ async function update(id: number, data: Prisma.ClientUpdateInput) {
   return await clientRepository.update(id, data);
 }
 
+async function deleteById(id: number) {
+  return await clientRepository.deleteById(id);
+}
+
 export type GetAllClientsParams = Pagination & {
   fullName?: string;
   contact?: string;
@@ -58,4 +62,5 @@ export const clientService = {
   getAll,
   getById,
   update,
+  deleteById,
 };

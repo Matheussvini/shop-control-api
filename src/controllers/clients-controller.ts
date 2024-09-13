@@ -69,3 +69,17 @@ export async function updateClient(req: AuthenticatedRequest, res: Response, nex
     next(error);
   }
 }
+
+export async function deleteClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { user } = req;
+
+  try {
+    await validateUser(Number(id), user);
+    await clientService.deleteById(Number(id));
+
+    return res.status(httpStatus.NO_CONTENT).send(`User with id ${id} deleted successfully`);
+  } catch (error) {
+    next(error);
+  }
+}

@@ -75,6 +75,12 @@ async function update(id: number, data: Prisma.ClientUpdateInput) {
   });
 }
 
+async function deleteById(id: number) {
+  return prisma.client.delete({
+    where: { id },
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -89,4 +95,5 @@ export const clientRepository = {
   findById,
   count,
   update,
+  deleteById,
 };

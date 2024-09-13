@@ -142,8 +142,6 @@ async function update(id: number, data: UpdateUserInput) {
 }
 
 async function deleteById(id: number) {
-  await getById(id);
-
   await userRepository.deleteById(id);
 }
 
