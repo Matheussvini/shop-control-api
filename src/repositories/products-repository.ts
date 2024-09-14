@@ -7,6 +7,32 @@ async function create(data: Prisma.ProductCreateInput) {
   });
 }
 
+async function findMany(params: FindManyParams) {
+  return await prisma.product.findMany({
+    ...params,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      stock: true,
+      status: true,
+    },
+  });
+}
+
+async function count(where?: Prisma.ProductWhereInput) {
+  return prisma.product.count({ where });
+}
+
+type FindManyParams = {
+  skip?: number;
+  take?: number;
+  where?: Prisma.ProductWhereInput;
+};
+
 export const productRepository = {
   create,
+  findMany,
+  count,
 };

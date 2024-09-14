@@ -1,5 +1,6 @@
 import { Product } from '@prisma/client';
 import Joi from 'joi';
+import { Pagination } from './../types/shared-types';
 import { AutoProperty } from '@/types';
 
 export const createProductSchema = Joi.object<CreateProductInput>({
@@ -9,6 +10,28 @@ export const createProductSchema = Joi.object<CreateProductInput>({
   stock: Joi.number().min(0).required(),
 });
 
+export const getAllProductsSchema = Joi.object({
+  page: Joi.number().min(1),
+  limit: Joi.number().min(1),
+  name: Joi.string(),
+  description: Joi.string(),
+  minPrice: Joi.number().min(0),
+  maxPrice: Joi.number().min(0),
+  minStock: Joi.number().min(0),
+  maxStock: Joi.number().min(0),
+  status: Joi.boolean(),
+});
+
 type OmitProduct = Omit<Product, keyof AutoProperty>;
 
 export type CreateProductInput = Omit<OmitProduct, 'status'>;
+
+export type GetAllProductsParams = Pagination & {
+  name?: string;
+  description?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minStock?: number;
+  maxStock?: number;
+  status?: boolean;
+};
