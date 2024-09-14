@@ -57,10 +57,15 @@ async function deleteById(id: number) {
   return await productRepository.deleteById(id);
 }
 
+async function persistImage(productId: number, path: string, key: string) {
+  return await productRepository.saveImage({ productId, path, key });
+}
+
 export const productService = {
   create,
   getAll,
   getById,
   update,
   deleteById,
+  persistImage,
 };

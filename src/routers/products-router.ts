@@ -13,7 +13,7 @@ productsRouter
   .get('/:id', getProductById)
   .all('/*', authAdminValidation)
   .post('/', validateBody(createProductSchema), createProduct)
-  .post('/upload', multer(multerConfig).single('file'), uploadFile)
+  .post('/upload/:productId', multer(multerConfig).single('file'), uploadFile)
   .patch('/:id', validateBody(updateProductSchema), updateProduct)
   .delete('/:id', deleteProduct);
 

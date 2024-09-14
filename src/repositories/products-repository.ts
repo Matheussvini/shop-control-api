@@ -44,10 +44,22 @@ async function deleteById(id: number) {
   });
 }
 
+async function saveImage(params: SaveImageParams) {
+  return prisma.image.create({
+    data: params,
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
   where?: Prisma.ProductWhereInput;
+};
+
+export type SaveImageParams = {
+  productId: number;
+  path: string;
+  key: string;
 };
 
 export const productRepository = {
@@ -57,4 +69,5 @@ export const productRepository = {
   findById,
   update,
   deleteById,
+  saveImage,
 };
