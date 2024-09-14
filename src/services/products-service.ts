@@ -58,6 +58,8 @@ async function deleteById(id: number) {
 }
 
 async function persistImage(productId: number, path: string, key: string) {
+  const product = await getById(productId);
+  if (!product) throw notFoundError('Product not found');
   return await productRepository.saveImage({ productId, path, key });
 }
 
