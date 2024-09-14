@@ -26,7 +26,8 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
       contact: contact as string,
     };
 
-    if (status === 'true' || status === 'false') filters.status = Boolean(status);
+    if (status === 'true') filters.status = true;
+    else if (status === 'false') filters.status = false;
 
     const clients = await clientService.getAll(filters);
 
@@ -78,7 +79,7 @@ export async function deleteClient(req: AuthenticatedRequest, res: Response, nex
     await validateUser(Number(id), user);
     await clientService.deleteById(Number(id));
 
-    return res.status(httpStatus.NO_CONTENT).send(`User with id ${id} deleted successfully`);
+    return res.status(httpStatus.NO_CONTENT).send(`Client with id ${id} deleted successfully`);
   } catch (error) {
     next(error);
   }
