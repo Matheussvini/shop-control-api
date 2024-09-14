@@ -34,6 +34,10 @@ export function handleApplicationErrors(err: ApplicationError, req: Request, res
     return res.status(httpStatus.FORBIDDEN).send({ message: err.message });
   }
 
+  if (err.name === 'BadRequestError') {
+    return res.status(httpStatus.BAD_REQUEST).send({ message: err.message });
+  }
+
   return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
     error: 'Internal Server Error',
     message: err.message,

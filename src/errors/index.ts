@@ -51,3 +51,10 @@ export function forbiddenError(message: string): ApplicationError {
     message,
   };
 }
+
+export function badRequestError(message: string): ApplicationError {
+  return {
+    name: 'BadRequestError',
+    message,
+  };
+}
