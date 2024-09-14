@@ -36,7 +36,31 @@ async function getCart(clientId: number) {
   return cart;
 }
 
+async function getAll({ page, limit, minDate, maxDate, minPrice, maxPrice, productName }) {
+  const filters: any = {};
+
+  if (minDate) filters.minDate = minDate;
+  if (maxDate) filters.maxDate = maxDate;
+  if (minPrice) filters.minPrice = minPrice;
+  if (maxPrice) filters.maxPrice = maxPrice;
+  if (productName) filters.productName = productName;
+  filters.page = page;
+  filters.limit = limit;
+  const [carts, totalCount] = await Promise.all([
+    cartsRepository.findMany(filters),
+    cartsRepository.countCarts(filters),
+  ]);
+
+  return {
+    carts,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    currentPage: page,
+  };
+}
+
 export const cartsService = {
   changeProduct,
   getCart,
+  getAll,
 };

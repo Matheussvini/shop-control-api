@@ -34,3 +34,25 @@ export async function getCart(req: AuthenticatedRequest, res: Response, next: Ne
     next(error);
   }
 }
+
+export async function getAllCarts(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { page = 1, limit = 10, minDate, maxDate, minPrice, maxPrice, productName } = req.query;
+
+  try {
+    const filters = {
+      page: Number(page),
+      limit: Number(limit),
+      minDate: minDate as string,
+      maxDate: maxDate as string,
+      minPrice: Number(minPrice),
+      maxPrice: Number(maxPrice),
+      productName: productName as string,
+    };
+
+    const carts = await cartsService.getAll(filters);
+
+    return res.status(httpStatus.OK).send(carts);
+  } catch (error) {
+    next(error);
+  }
+}
