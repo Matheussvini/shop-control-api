@@ -21,9 +21,9 @@ productsRouter
   .get('/:id', getProductById)
   .all('/*', authAdminValidation)
   .post('/', validateBody(createProductSchema), createProduct)
-  .post('/upload/:productId', multer(multerConfig).single('file'), uploadFile)
   .patch('/:id', validateBody(updateProductSchema), updateProduct)
   .delete('/:id', deleteProduct)
+  .post('/upload/:productId', multer(multerConfig).single('file'), uploadFile)
   .delete('/image/:id', deleteImage);
 
 export { productsRouter };

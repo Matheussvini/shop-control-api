@@ -19,14 +19,14 @@ usersRouter
   .get('/test', (req, res) => {
     res.send('Hello, world!');
   })
-  .post('/login', validateBody(loginSchema), login)
   .post('/', validateBody(createUserSchema), create)
   .get('/confirm-email/:token', confirmEmail)
+  .post('/login', validateBody(loginSchema), login)
   .all('/*', authValidation)
   .get('/:id', getById)
   .patch('/:id', validateBody(updateUserSchema), update)
-  .delete('/:id', deleteById)
   .put('/password/:id', validateBody(changePasswordSchema), changePassword)
+  .delete('/:id', deleteById)
   .all('/*', authAdminValidation)
   .post('/admin', validateBody(createUserSchema), createAdmin)
   .get('/', validateQuery(getAllUserSchema), getAll);
