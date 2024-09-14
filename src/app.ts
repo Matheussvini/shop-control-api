@@ -14,6 +14,7 @@ app
   .use('/users', usersRouter)
   .use('/clients', clientsRouter)
   .use('/products', productsRouter)
+  .use('/uploads', express.static(path.resolve(process.cwd(), 'tmp', 'uploads')))
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
