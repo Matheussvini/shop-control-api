@@ -57,6 +57,8 @@ async function findById(id: number) {
     },
   });
 
+  if (!client) return null;
+
   const { Addresses, ...clientData } = client;
   return {
     ...clientData,

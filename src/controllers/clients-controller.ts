@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 import { clientService, GetAllClientsParams } from '@/services';
 import { clientRepository } from '@/repositories';
-import { unauthorizedError } from '@/errors';
+import { notFoundError, unauthorizedError } from '@/errors';
 
 export async function createClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   try {
@@ -41,6 +41,9 @@ export async function validateClient(clientId: number, user: SecuryUser) {
   const client = await clientRepository.findByUserId(user.id);
   if (user.type !== 'admin' && client?.id !== clientId)
     throw unauthorizedError("You don't have permission to access other user");
+
+  const checkClientId = await clientRepository.findById(clientId);
+  if (!checkClientId) throw notFoundError('Client not found');
 }
 
 export async function getClientById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
