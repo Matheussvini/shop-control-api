@@ -22,6 +22,13 @@ export const getAllProductsSchema = Joi.object({
   status: Joi.boolean(),
 });
 
+export const updateProductSchema = Joi.object({
+  name: Joi.string().min(3).optional(),
+  description: Joi.string().min(3).optional(),
+  price: Joi.number().min(0).optional(),
+  stock: Joi.number().min(0).optional(),
+}).or('name', 'description', 'price', 'stock');
+
 type OmitProduct = Omit<Product, keyof AutoProperty>;
 
 export type CreateProductInput = Omit<OmitProduct, 'status'>;

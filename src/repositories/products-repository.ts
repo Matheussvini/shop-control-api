@@ -31,6 +31,13 @@ async function findById(id: number) {
   });
 }
 
+async function update(id: number, data: Prisma.ProductUpdateInput) {
+  return prisma.product.update({
+    where: { id },
+    data,
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -42,4 +49,5 @@ export const productRepository = {
   findMany,
   count,
   findById,
+  update,
 };

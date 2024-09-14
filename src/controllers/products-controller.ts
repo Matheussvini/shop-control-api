@@ -74,6 +74,18 @@ export async function getProductById(req: AuthenticatedRequest, res: Response, n
   }
 }
 
+export async function updateProduct(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+  const { name, description, price, stock } = req.body;
+
+  try {
+    const updatedProduct = await productService.update(Number(id), { name, description, price, stock });
+
+    return res.status(httpStatus.OK).send(updatedProduct);
+  } catch (error) {
+    next(error);
+  }
+}
 interface MulterFileWithLocation extends Express.Multer.File {
   location: string;
   key: string;

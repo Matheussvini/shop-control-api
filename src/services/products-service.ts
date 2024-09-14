@@ -49,8 +49,13 @@ async function getById(id: number) {
   return product;
 }
 
+async function update(id: number, data: Prisma.ProductUpdateInput) {
+  return await productRepository.update(id, data);
+}
+
 export const productService = {
   create,
   getAll,
   getById,
+  update,
 };
