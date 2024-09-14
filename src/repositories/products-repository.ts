@@ -8,17 +8,23 @@ async function create(data: Prisma.ProductCreateInput) {
 }
 
 async function findMany(params: FindManyParams) {
-  return await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     ...params,
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      price: true,
-      stock: true,
-      status: true,
+    include: {
+      Images: {
+        select: {
+          path: true,
+        },
+        take: 1,
+      },
     },
   });
+
+  return products.map((product) => ({
+    ...product,
+    imageUrl: product.Images.length > 0 ? product.Images[0].path : null,
+    Images: undefined,
+  }));
 }
 
 async function count(where?: Prisma.ProductWhereInput) {
@@ -28,6 +34,14 @@ async function count(where?: Prisma.ProductWhereInput) {
 async function findById(id: number) {
   return await prisma.product.findUnique({
     where: { id },
+    include: {
+      Images: {
+        select: {
+          id: true,
+          path: true,
+        },
+      },
+    },
   });
 }
 
@@ -47,6 +61,9 @@ async function deleteById(id: number) {
 async function saveImage(params: SaveImageParams) {
   return prisma.image.create({
     data: params,
+    select: {
+      path: true,
+    },
   });
 }
 
