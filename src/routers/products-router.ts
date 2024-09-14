@@ -1,6 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { createProduct, deleteProduct, getAllProducts, getProductById, updateProduct, uploadFile } from '@/controllers';
+import {
+  createProduct,
+  deleteImage,
+  deleteProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+  uploadFile,
+} from '@/controllers';
 import { authAdminValidation, authValidation, validateBody, validateQuery } from '@/middlewares';
 import { createProductSchema, getAllProductsSchema, updateProductSchema } from '@/schemas';
 import { multerConfig } from '@/config';
@@ -15,6 +23,7 @@ productsRouter
   .post('/', validateBody(createProductSchema), createProduct)
   .post('/upload/:productId', multer(multerConfig).single('file'), uploadFile)
   .patch('/:id', validateBody(updateProductSchema), updateProduct)
-  .delete('/:id', deleteProduct);
+  .delete('/:id', deleteProduct)
+  .delete('/image/:id', deleteImage);
 
 export { productsRouter };

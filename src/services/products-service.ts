@@ -1,7 +1,12 @@
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Prisma } from '@prisma/client';
 import { productRepository } from '@/repositories';
 import { CreateProductInput, GetAllProductsParams } from '@/schemas';
 import { notFoundError } from '@/errors';
+
+const s3 = new S3Client({
+  region: process.env.AWS_DEFAULT_REGION,
+});
 
 async function create(data: CreateProductInput) {
   const product = await productRepository.create(data);
@@ -63,6 +68,20 @@ async function persistImage(productId: number, path: string, key: string) {
   return await productRepository.saveImage({ productId, path, key });
 }
 
+async function deleteImage(id: number) {
+  const image = await productRepository.findImageById(id);
+  if (!image) throw notFoundError('Image not found');
+
+  const deleteParams = {
+    Bucket: process.env.AWS_BUCKET_NAME || '',
+    Key: image.key,
+  };
+
+  await s3.send(new DeleteObjectCommand(deleteParams));
+
+  return await productRepository.deleteImage(id);
+}
+
 export const productService = {
   create,
   getAll,
@@ -70,4 +89,5 @@ export const productService = {
   update,
   deleteById,
   persistImage,
+  deleteImage,
 };

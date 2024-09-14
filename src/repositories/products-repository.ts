@@ -50,6 +50,18 @@ async function saveImage(params: SaveImageParams) {
   });
 }
 
+async function findImageById(id: number) {
+  return prisma.image.findUnique({
+    where: { id },
+  });
+}
+
+async function deleteImage(id: number) {
+  return prisma.image.delete({
+    where: { id },
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -70,4 +82,6 @@ export const productRepository = {
   update,
   deleteById,
   saveImage,
+  findImageById,
+  deleteImage,
 };

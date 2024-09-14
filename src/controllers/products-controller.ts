@@ -33,8 +33,8 @@ export async function uploadFile(req: AuthenticatedRequest, res: Response, next:
   }
 
   try {
-    await productService.persistImage(Number(productId), url, key);
-    return res.status(httpStatus.CREATED).send({ message: 'Image sent successfully!', data: { url, key } });
+    const image = await productService.persistImage(Number(productId), url, key);
+    return res.status(httpStatus.CREATED).send({ message: 'Image sent successfully!', data: { ...image } });
   } catch (error) {
     next(error);
   }
@@ -97,6 +97,18 @@ export async function deleteProduct(req: AuthenticatedRequest, res: Response, ne
     await productService.deleteById(Number(id));
 
     return res.status(httpStatus.NO_CONTENT).send(`Product with id ${id} deleted successfully`);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteImage(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { id } = req.params;
+
+  try {
+    await productService.deleteImage(Number(id));
+
+    return res.status(200).json({ message: 'Image deleted successfully' });
   } catch (error) {
     next(error);
   }
