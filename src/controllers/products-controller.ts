@@ -86,6 +86,19 @@ export async function updateProduct(req: AuthenticatedRequest, res: Response, ne
     next(error);
   }
 }
+
+export async function deleteProduct(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+
+  try {
+    await productService.deleteById(Number(id));
+
+    return res.status(httpStatus.NO_CONTENT).send(`Product with id ${id} deleted successfully`);
+  } catch (error) {
+    next(error);
+  }
+}
+
 interface MulterFileWithLocation extends Express.Multer.File {
   location: string;
   key: string;

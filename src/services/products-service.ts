@@ -53,9 +53,14 @@ async function update(id: number, data: Prisma.ProductUpdateInput) {
   return await productRepository.update(id, data);
 }
 
+async function deleteById(id: number) {
+  return await productRepository.deleteById(id);
+}
+
 export const productService = {
   create,
   getAll,
   getById,
   update,
+  deleteById,
 };

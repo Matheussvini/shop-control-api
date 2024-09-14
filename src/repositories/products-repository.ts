@@ -38,6 +38,12 @@ async function update(id: number, data: Prisma.ProductUpdateInput) {
   });
 }
 
+async function deleteById(id: number) {
+  return prisma.product.delete({
+    where: { id },
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -50,4 +56,5 @@ export const productRepository = {
   count,
   findById,
   update,
+  deleteById,
 };
