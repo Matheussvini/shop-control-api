@@ -90,8 +90,6 @@ model Item {
   quantity   Int
   price      Decimal
   subtotal   Decimal
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
   Order      Order    @relation(fields: [orderId], references: [id])
   Product    Product  @relation(fields: [productId], references: [id])
 
