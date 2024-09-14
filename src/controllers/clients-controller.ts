@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 import { clientService, GetAllClientsParams } from '@/services';
 import { clientRepository } from '@/repositories';
-import { unauthorizedError } from '@/errors';
+import { notFoundError, unauthorizedError } from '@/errors';
 
 export async function createClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   try {
@@ -37,17 +37,20 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
   }
 }
 
-async function validateUser(clientId: number, user: SecuryUser) {
+export async function validateClient(clientId: number, user: SecuryUser) {
   const client = await clientRepository.findByUserId(user.id);
   if (user.type !== 'admin' && client?.id !== clientId)
     throw unauthorizedError("You don't have permission to access other user");
+
+  const checkClientId = await clientRepository.findById(clientId);
+  if (!checkClientId) throw notFoundError('Client not found');
 }
 
 export async function getClientById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
   const { user } = req;
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     const client = await clientService.getById(Number(id));
 
     return res.status(httpStatus.OK).send(client);
@@ -62,7 +65,7 @@ export async function updateClient(req: AuthenticatedRequest, res: Response, nex
   const { user } = req;
 
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     const updatedClient = await clientService.update(Number(id), { fullName, contact });
 
     return res.status(httpStatus.OK).send(updatedClient);
@@ -76,7 +79,7 @@ export async function deleteClient(req: AuthenticatedRequest, res: Response, nex
   const { user } = req;
 
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     await clientService.deleteById(Number(id));
 
     return res.status(httpStatus.NO_CONTENT).send(`Client with id ${id} deleted successfully`);

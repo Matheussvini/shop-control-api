@@ -95,6 +95,7 @@ model Item {
   Order      Order    @relation(fields: [orderId], references: [id])
   Product    Product  @relation(fields: [productId], references: [id])
 
+  @@unique([orderId, productId], name: "unique_item_per_order")
   @@map("items")
 }
 
@@ -129,6 +130,7 @@ model CartItem {
   Client     Client   @relation(fields: [clientId], references: [id])
   Product    Product  @relation(fields: [productId], references: [id])
 
+  @@unique([clientId, productId], name: "unique_cart_item")
   @@map("cart_items")
 }
 

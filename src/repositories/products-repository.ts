@@ -58,9 +58,9 @@ async function deleteById(id: number) {
   });
 }
 
-async function saveImage(params: SaveImageParams) {
+async function saveImage(data: SaveImageParams) {
   return prisma.image.create({
-    data: params,
+    data,
     select: {
       path: true,
     },
