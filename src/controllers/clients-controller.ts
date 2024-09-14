@@ -37,7 +37,7 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
   }
 }
 
-async function validateUser(clientId: number, user: SecuryUser) {
+export async function validateClient(clientId: number, user: SecuryUser) {
   const client = await clientRepository.findByUserId(user.id);
   if (user.type !== 'admin' && client?.id !== clientId)
     throw unauthorizedError("You don't have permission to access other user");
@@ -47,7 +47,7 @@ export async function getClientById(req: AuthenticatedRequest, res: Response, ne
   const { id } = req.params;
   const { user } = req;
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     const client = await clientService.getById(Number(id));
 
     return res.status(httpStatus.OK).send(client);
@@ -62,7 +62,7 @@ export async function updateClient(req: AuthenticatedRequest, res: Response, nex
   const { user } = req;
 
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     const updatedClient = await clientService.update(Number(id), { fullName, contact });
 
     return res.status(httpStatus.OK).send(updatedClient);
@@ -76,7 +76,7 @@ export async function deleteClient(req: AuthenticatedRequest, res: Response, nex
   const { user } = req;
 
   try {
-    await validateUser(Number(id), user);
+    await validateClient(Number(id), user);
     await clientService.deleteById(Number(id));
 
     return res.status(httpStatus.NO_CONTENT).send(`Client with id ${id} deleted successfully`);

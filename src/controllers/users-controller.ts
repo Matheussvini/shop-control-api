@@ -81,7 +81,7 @@ export async function getAll(req: AuthenticatedRequest, res: Response, next: Nex
   }
 }
 
-async function validateUser(id: number, userId: number, type: string): Promise<void> {
+export async function validateUser(id: number, userId: number, type: string): Promise<void> {
   if (type !== 'admin' && id !== userId) {
     throw unauthorizedError("You don't have permission to access other user");
   }
