@@ -62,6 +62,18 @@ export async function getAllProducts(req: AuthenticatedRequest, res: Response, n
   }
 }
 
+export async function getProductById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+
+  try {
+    const product = await productService.getById(Number(id));
+
+    return res.status(httpStatus.OK).send(product);
+  } catch (error) {
+    next(error);
+  }
+}
+
 interface MulterFileWithLocation extends Express.Multer.File {
   location: string;
   key: string;

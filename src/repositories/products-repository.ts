@@ -25,6 +25,12 @@ async function count(where?: Prisma.ProductWhereInput) {
   return prisma.product.count({ where });
 }
 
+async function findById(id: number) {
+  return await prisma.product.findUnique({
+    where: { id },
+  });
+}
+
 type FindManyParams = {
   skip?: number;
   take?: number;
@@ -35,4 +41,5 @@ export const productRepository = {
   create,
   findMany,
   count,
+  findById,
 };

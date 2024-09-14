@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { productRepository } from '@/repositories';
 import { CreateProductInput, GetAllProductsParams } from '@/schemas';
+import { notFoundError } from '@/errors';
 
 async function create(data: CreateProductInput) {
   const product = await productRepository.create(data);
@@ -42,7 +43,14 @@ async function getAll({
   return { data: products, total, page, limit };
 }
 
+async function getById(id: number) {
+  const product = await productRepository.findById(id);
+  if (!product) throw notFoundError('Product not found');
+  return product;
+}
+
 export const productService = {
   create,
   getAll,
+  getById,
 };
