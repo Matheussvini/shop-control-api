@@ -11,15 +11,6 @@ productsRouter
   .all('/*', authValidation)
   .all('/*', authAdminValidation)
   .post('/', validateBody(createProductSchema), createProduct)
-  // .post('/upload', multer(multerConfig).single('file'), uploadFile);
-  .post(
-    '/upload',
-    multer(multerConfig).single('file'),
-    (req, res, next) => {
-      console.log(req.file); // Veja o que está sendo logado aqui
-      next();
-    },
-    uploadFile,
-  );
+  .post('/upload', multer(multerConfig).single('file'), uploadFile);
 
 export { productsRouter };
