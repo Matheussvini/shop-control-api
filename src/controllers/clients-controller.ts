@@ -26,7 +26,8 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
       contact: contact as string,
     };
 
-    if (status === 'true' || status === 'false') filters.status = Boolean(status);
+    if (status === 'true') filters.status = true;
+    else if (status === 'false') filters.status = false;
 
     const clients = await clientService.getAll(filters);
 
