@@ -21,7 +21,12 @@ function validate(schema: ObjectSchema, type: 'body' | 'params' | 'query'): Vali
       convert: true,
     });
 
-    if (error) throw invalidDataError(error.details.map((d) => d.message));
+    if (error) {
+      const invalidParams = error.details.map((d) => d.message);
+      const validParams = schema.describe().keys ? Object.keys(schema.describe().keys) : [];
+
+      throw invalidDataError({ details: invalidParams, validParams });
+    }
     next();
   };
 }

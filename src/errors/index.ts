@@ -35,15 +35,18 @@ export function unauthorizedError(message: string): ApplicationError {
   };
 }
 
-export function invalidDataError(details: string[]): ApplicationError & {
-  details: string[];
-} {
+export function invalidDataError(params: SchemaError): ApplicationError & SchemaError {
   return {
     name: 'InvalidDataError',
     message: 'Invalid data',
-    details,
+    ...params,
   };
 }
+
+type SchemaError = {
+  details: string[];
+  validParams: string[];
+};
 
 export function forbiddenError(message: string): ApplicationError {
   return {

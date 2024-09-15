@@ -24,10 +24,7 @@ export function handleApplicationErrors(err: ApplicationError, req: Request, res
   }
 
   if (err.name === 'InvalidDataError') {
-    return res.status(httpStatus.BAD_REQUEST).send({
-      message: err.message,
-      details: err.details,
-    });
+    return res.status(httpStatus.BAD_REQUEST).send(err);
   }
 
   if (err.name === 'ForbiddenError') {
