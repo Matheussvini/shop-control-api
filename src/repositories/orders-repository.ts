@@ -154,6 +154,12 @@ async function updateStatus(id: number, status: $Enums.OrderStatus) {
   });
 }
 
+async function deleteById(id: number) {
+  return await prisma.order.delete({
+    where: { id },
+  });
+}
+
 export const ordersRepository = {
   create,
   findByClientId,
@@ -162,4 +168,5 @@ export const ordersRepository = {
   count,
   completePayment,
   updateStatus,
+  deleteById,
 };

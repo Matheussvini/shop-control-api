@@ -97,6 +97,13 @@ async function updateStatus(orderId: number, status: $Enums.OrderStatus) {
   return await ordersRepository.updateStatus(orderId, status);
 }
 
+async function exclude(orderId: number) {
+  const order = await ordersRepository.findById(orderId);
+  if (!order) throw notFoundError('Order not found');
+
+  return await ordersRepository.deleteById(orderId);
+}
+
 export const ordersService = {
   create,
   getByClientId,
@@ -106,4 +113,5 @@ export const ordersService = {
   paymentDone,
   checkStockAvailability,
   updateStatus,
+  exclude,
 };

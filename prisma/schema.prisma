@@ -78,7 +78,7 @@ model Order {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   Client     Client   @relation(fields: [clientId], references: [id])
-  Items      Item[]
+  Items      Item[]   @relation("OrderItems")
 
   @@map("orders")
 }
@@ -90,7 +90,7 @@ model Item {
   quantity   Int
   price      Decimal
   subtotal   Decimal
-  Order      Order    @relation(fields: [orderId], references: [id])
+  Order      Order    @relation("OrderItems", fields: [orderId], references: [id], onDelete: Cascade)
   Product    Product  @relation(fields: [productId], references: [id])
 
   @@unique([orderId, productId], name: "unique_item_per_order")

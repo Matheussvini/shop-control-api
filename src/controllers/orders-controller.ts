@@ -97,3 +97,14 @@ export async function updateOrderStatus(
     next(error);
   }
 }
+
+export async function deleteOrder(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { id } = req.params;
+
+  try {
+    await ordersService.exclude(Number(id));
+    return res.status(httpStatus.NO_CONTENT).send();
+  } catch (error) {
+    next(error);
+  }
+}

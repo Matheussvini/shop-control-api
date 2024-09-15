@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authAdminValidation, authValidation, validateParams, validateQuery } from '@/middlewares';
 import {
   createOrder,
+  deleteOrder,
   doPayment,
   getAllOrders,
   getOrderById,
@@ -20,6 +21,7 @@ ordersRouter
   .post('/payment/:orderId', doPayment)
   .all('/*', authAdminValidation)
   .get('/', validateQuery(getAllOrdersSchema), getAllOrders)
-  .patch('/status/:orderId/:status', validateParams(updateStatusSchema), updateOrderStatus);
+  .patch('/status/:orderId/:status', validateParams(updateStatusSchema), updateOrderStatus)
+  .delete('/:id', deleteOrder);
 
 export { ordersRouter };
