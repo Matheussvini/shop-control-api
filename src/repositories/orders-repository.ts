@@ -1,4 +1,6 @@
+import { Prisma } from '@prisma/client';
 import { cartsRepository } from './carts-repository';
+import { FindManyParams } from './products-repository';
 import { prisma } from '@/config';
 
 async function create({ total, clientId, cart }) {
@@ -64,7 +66,67 @@ async function findByClientId(clientId: number) {
   });
 }
 
+async function findById(id: number) {
+  return await prisma.order.findUnique({
+    where: { id },
+    include: {
+      Client: {
+        select: {
+          userId: true,
+        },
+      },
+      Items: {
+        select: {
+          quantity: true,
+          price: true,
+          subtotal: true,
+          Product: {
+            select: {
+              name: true,
+              description: true,
+              Images: {
+                select: { path: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+async function findMany(params) {
+  return await prisma.order.findMany({
+    ...params,
+    include: {
+      Items: {
+        select: {
+          quantity: true,
+          subtotal: true,
+          Product: {
+            select: {
+              name: true,
+              price: true,
+              Images: {
+                select: { path: true },
+                take: 1,
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+async function count(where: Prisma.OrderWhereInput) {
+  return prisma.order.count({ where });
+}
+
 export const ordersRepository = {
   create,
   findByClientId,
+  findById,
+  findMany,
+  count,
 };

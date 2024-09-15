@@ -79,7 +79,7 @@ async function deleteImage(id: number) {
   });
 }
 
-type FindManyParams = {
+export type FindManyParams = {
   skip?: number;
   take?: number;
   where?: Prisma.ProductWhereInput;
