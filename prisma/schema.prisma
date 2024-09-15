@@ -111,8 +111,8 @@ model Report {
 model Image {
   id         Int      @id @default(autoincrement())
   productId  Int
-  path       String
-  key        String
+  path       String 
+  key        String?   
   Product    Product  @relation(fields: [productId], references: [id])
 
   @@map("images")
