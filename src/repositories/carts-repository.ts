@@ -180,6 +180,12 @@ async function countCarts({ minDate, maxDate, minPrice, maxPrice, productName })
   return result[0]?.total || 0;
 }
 
+async function clearCart(clientId: number) {
+  return await prisma.cartItem.deleteMany({
+    where: { clientId },
+  });
+}
+
 export const cartsRepository = {
   addProduct,
   findProduct,
@@ -188,4 +194,5 @@ export const cartsRepository = {
   getCart,
   findMany,
   countCarts,
+  clearCart,
 };

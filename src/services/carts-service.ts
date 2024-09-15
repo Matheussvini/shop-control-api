@@ -32,8 +32,16 @@ async function changeProduct({ clientId, productId, quantity }: ChangeProductToC
 }
 
 async function getCart(clientId: number) {
-  const cart = await cartsRepository.getCart(clientId);
-  return cart;
+  let cart = await cartsRepository.getCart(clientId);
+  if (!cart) throw notFoundError('Shopping cart is empty');
+
+  cart = cart.map((item) => ({
+    ...item,
+    subtotal: item.Product.price * item.quantity,
+  }));
+  const total = cart.reduce((acc, item) => acc + item.Product.price * item.quantity, 0);
+
+  return { total, clientId, cart };
 }
 
 async function getAll({ page, limit, minDate, maxDate, minPrice, maxPrice, productName }) {
