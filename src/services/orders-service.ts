@@ -14,6 +14,11 @@ async function create(user: SecuryUser) {
   return order;
 }
 
+async function getByClientId(userId: number) {
+  return await ordersRepository.findByClientId(userId);
+}
+
 export const ordersService = {
   create,
+  getByClientId,
 };

@@ -5,7 +5,7 @@ async function create({ total, clientId, cart }) {
   return await prisma.$transaction(async (prisma) => {
     const order = await prisma.order.create({
       data: {
-        total,
+        total: Number(total),
         Client: {
           connect: {
             id: clientId,
@@ -36,6 +36,35 @@ async function create({ total, clientId, cart }) {
   });
 }
 
+async function findByClientId(clientId: number) {
+  return await prisma.order.findMany({
+    where: {
+      Client: {
+        id: clientId,
+      },
+    },
+    include: {
+      Items: {
+        select: {
+          quantity: true,
+          subtotal: true,
+          Product: {
+            select: {
+              name: true,
+              price: true,
+              Images: {
+                select: { path: true },
+                take: 1,
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
 export const ordersRepository = {
   create,
+  findByClientId,
 };
