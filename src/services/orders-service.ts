@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, $Enums } from '@prisma/client';
 import { cartsService } from './carts-service';
 import { badRequestError, conflictError, notFoundError, unauthorizedError } from '@/errors';
 import { clientRepository, ordersRepository, productRepository } from '@/repositories';
@@ -89,6 +89,14 @@ async function checkStockAvailability(items: { productId: number; quantity: numb
   }
 }
 
+async function updateStatus(orderId: number, status: $Enums.OrderStatus) {
+  const order = await ordersRepository.findById(orderId);
+  if (!order) throw notFoundError('Order not found');
+  if (order.status === status) throw badRequestError('Order already has this status');
+
+  return await ordersRepository.updateStatus(orderId, status);
+}
+
 export const ordersService = {
   create,
   getByClientId,
@@ -97,4 +105,5 @@ export const ordersService = {
   simulatePayment,
   paymentDone,
   checkStockAvailability,
+  updateStatus,
 };

@@ -26,13 +26,6 @@ async function create({ total, clientId, cart }) {
       },
     });
 
-    // cart.forEach(async (item) => {
-    //   await prisma.product.update({
-    //     where: { id: item.productId },
-    //     data: { stock: { decrement: item.quantity } },
-    //   });
-    // });
-
     await cartsRepository.clearCart(clientId);
     return order;
   });
@@ -138,7 +131,6 @@ async function completePayment(id: number, status: $Enums.OrderStatus) {
         },
       },
     });
-    // validar se o estoque de cada produto é suficiente do que vai decrementar em cada item (item.quantity)
 
     await ordersService.checkStockAvailability(order.Items);
 
@@ -155,6 +147,13 @@ async function completePayment(id: number, status: $Enums.OrderStatus) {
   });
 }
 
+async function updateStatus(id: number, status: $Enums.OrderStatus) {
+  return await prisma.order.update({
+    where: { id },
+    data: { status },
+  });
+}
+
 export const ordersRepository = {
   create,
   findByClientId,
@@ -162,4 +161,5 @@ export const ordersRepository = {
   findMany,
   count,
   completePayment,
+  updateStatus,
 };

@@ -1,4 +1,4 @@
-import { $Enums } from '@prisma/client';
+import { $Enums, OrderStatus } from '@prisma/client';
 import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
 import { validateClient } from './clients-controller';
@@ -78,6 +78,21 @@ export async function doPayment(req: AuthenticatedRequest, res: Response, next: 
       return res.status(httpStatus.OK).send({ message: 'Payment successful!', data: result });
     }
     return res.status(httpStatus.PAYMENT_REQUIRED).send({ message: 'Payment failed!' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateOrderStatus(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<Response> {
+  const { orderId, status } = req.params;
+
+  try {
+    const result = await ordersService.updateStatus(Number(orderId), status as OrderStatus);
+    return res.status(httpStatus.OK).send({ message: 'Order status updated successfully!', data: result });
   } catch (error) {
     next(error);
   }

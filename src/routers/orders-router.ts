@@ -1,7 +1,14 @@
 import { Router } from 'express';
-import { authAdminValidation, authValidation, validateQuery } from '@/middlewares';
-import { createOrder, doPayment, getAllOrders, getOrderById, getOrdersByClientId } from '@/controllers';
-import { getAllOrdersSchema } from '@/schemas';
+import { authAdminValidation, authValidation, validateParams, validateQuery } from '@/middlewares';
+import {
+  createOrder,
+  doPayment,
+  getAllOrders,
+  getOrderById,
+  getOrdersByClientId,
+  updateOrderStatus,
+} from '@/controllers';
+import { getAllOrdersSchema, updateStatusSchema } from '@/schemas';
 
 const ordersRouter = Router();
 
@@ -12,6 +19,7 @@ ordersRouter
   .get('/client/:clientId', getOrdersByClientId)
   .post('/payment/:orderId', doPayment)
   .all('/*', authAdminValidation)
-  .get('/', validateQuery(getAllOrdersSchema), getAllOrders);
+  .get('/', validateQuery(getAllOrdersSchema), getAllOrders)
+  .patch('/status/:orderId/:status', validateParams(updateStatusSchema), updateOrderStatus);
 
 export { ordersRouter };

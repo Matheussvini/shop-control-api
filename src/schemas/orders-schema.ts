@@ -14,6 +14,13 @@ export const getAllOrdersSchema = Joi.object({
   maxDate: Joi.date().optional(),
 });
 
+export const updateStatusSchema = Joi.object({
+  orderId: Joi.number().min(0).required(),
+  status: Joi.string()
+    .valid(...Object.values(OrderStatus))
+    .required(),
+});
+
 export type GetAllOrdersParams = Pagination & {
   status?: $Enums.OrderStatus;
   minTotal?: number;
