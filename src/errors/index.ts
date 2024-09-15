@@ -1,37 +1,42 @@
 import { ApplicationError } from '@/protocols.js';
 
-export function conflictError(message: string): ApplicationError {
+export function conflictError(message: string, details?): ApplicationError {
   return {
     name: 'ConflictError',
     message,
+    details,
   };
 }
 
-export function unprocessableEntityError(message: string): ApplicationError {
+export function unprocessableEntityError(message: string, details?): ApplicationError {
   return {
     name: 'UnprocessableEntityError',
     message,
+    details,
   };
 }
 
-export function invalidCredentialsError(message: string): ApplicationError {
+export function invalidCredentialsError(message: string, details?): ApplicationError {
   return {
     name: 'InvalidCredentialsError',
     message,
+    details,
   };
 }
 
-export function notFoundError(message: string): ApplicationError {
+export function notFoundError(message: string, details?): ApplicationError {
   return {
     name: 'NotFoundError',
     message,
+    details,
   };
 }
 
-export function unauthorizedError(message: string): ApplicationError {
+export function unauthorizedError(message: string, details?): ApplicationError {
   return {
     name: 'UnauthorizedError',
     message,
+    details,
   };
 }
 
@@ -48,16 +53,18 @@ type SchemaError = {
   validParams: string[];
 };
 
-export function forbiddenError(message: string): ApplicationError {
+export function forbiddenError(message: string, details?): ApplicationError {
   return {
     name: 'ForbiddenError',
     message,
+    details,
   };
 }
 
-export function badRequestError(message: string): ApplicationError {
+export function badRequestError(message: string, details?): ApplicationError {
   return {
     name: 'BadRequestError',
     message,
+    details,
   };
 }
