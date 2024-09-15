@@ -16,9 +16,9 @@ export const getAllProductsSchema = Joi.object({
   name: Joi.string(),
   description: Joi.string(),
   minPrice: Joi.number().min(0),
-  maxPrice: Joi.number().min(0),
+  maxPrice: Joi.number().min(0).greater(Joi.ref('minPrice')),
   minStock: Joi.number().min(0),
-  maxStock: Joi.number().min(0),
+  maxStock: Joi.number().min(0).greater(Joi.ref('minStock')),
   status: Joi.boolean(),
 });
 

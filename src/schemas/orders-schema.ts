@@ -9,9 +9,9 @@ export const getAllOrdersSchema = Joi.object({
     .valid(...Object.values(OrderStatus))
     .optional(),
   minTotal: Joi.number().min(0).optional(),
-  maxTotal: Joi.number().min(0).optional(),
+  maxTotal: Joi.number().min(0).greater(Joi.ref('minTotal')).optional(),
   minDate: Joi.date().optional(),
-  maxDate: Joi.date().optional(),
+  maxDate: Joi.date().greater(Joi.ref('minDate')).optional(),
 });
 
 export const updateStatusSchema = Joi.object({
