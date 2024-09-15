@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { cartsRepository } from './carts-repository';
-import { FindManyParams } from './products-repository';
 import { prisma } from '@/config';
 
 async function create({ total, clientId, cart }) {
@@ -26,12 +25,12 @@ async function create({ total, clientId, cart }) {
       },
     });
 
-    cart.forEach(async (item) => {
-      await prisma.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } },
-      });
-    });
+    // cart.forEach(async (item) => {
+    //   await prisma.product.update({
+    //     where: { id: item.productId },
+    //     data: { stock: { decrement: item.quantity } },
+    //   });
+    // });
 
     await cartsRepository.clearCart(clientId);
     return order;
