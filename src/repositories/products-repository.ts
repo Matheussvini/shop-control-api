@@ -45,6 +45,16 @@ async function findById(id: number) {
   });
 }
 
+async function findStockById(id: number) {
+  return await prisma.product.findUnique({
+    where: { id },
+    select: {
+      stock: true,
+      status: true,
+    },
+  });
+}
+
 async function update(id: number, data: Prisma.ProductUpdateInput) {
   return prisma.product.update({
     where: { id },
@@ -101,4 +111,5 @@ export const productRepository = {
   saveImage,
   findImageById,
   deleteImage,
+  findStockById,
 };

@@ -1,5 +1,6 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, $Enums } from '@prisma/client';
 import { cartsRepository } from './carts-repository';
+import { ordersService } from '@/services';
 import { prisma } from '@/config';
 
 async function create({ total, clientId, cart }) {
@@ -104,6 +105,7 @@ async function findMany(params) {
           subtotal: true,
           Product: {
             select: {
+              id: true,
               name: true,
               price: true,
               Images: {
@@ -122,10 +124,42 @@ async function count(where: Prisma.OrderWhereInput) {
   return prisma.order.count({ where });
 }
 
+async function completePayment(id: number, status: $Enums.OrderStatus) {
+  return await prisma.$transaction(async (prisma) => {
+    const order = await prisma.order.update({
+      where: { id },
+      data: { status },
+      include: {
+        Items: {
+          select: {
+            quantity: true,
+            productId: true,
+          },
+        },
+      },
+    });
+    // validar se o estoque de cada produto é suficiente do que vai decrementar em cada item (item.quantity)
+
+    await ordersService.checkStockAvailability(order.Items);
+
+    await Promise.all(
+      order.Items.map(async (item) => {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      }),
+    );
+
+    return order;
+  });
+}
+
 export const ordersRepository = {
   create,
   findByClientId,
   findById,
   findMany,
   count,
+  completePayment,
 };

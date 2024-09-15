@@ -67,3 +67,18 @@ export async function getAllOrders(req: AuthenticatedRequest, res: Response, nex
     next(error);
   }
 }
+
+export async function doPayment(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { orderId } = req.params;
+
+  try {
+    const payment = await ordersService.simulatePayment(Number(orderId));
+    if (payment.success) {
+      const result = await ordersService.paymentDone(Number(orderId));
+      return res.status(httpStatus.OK).send({ message: 'Payment successful!', data: result });
+    }
+    return res.status(httpStatus.PAYMENT_REQUIRED).send({ message: 'Payment failed!' });
+  } catch (error) {
+    next(error);
+  }
+}

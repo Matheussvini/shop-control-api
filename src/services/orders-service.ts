@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { cartsService } from './carts-service';
-import { notFoundError, unauthorizedError } from '@/errors';
-import { clientRepository, ordersRepository } from '@/repositories';
+import { badRequestError, conflictError, notFoundError, unauthorizedError } from '@/errors';
+import { clientRepository, ordersRepository, productRepository } from '@/repositories';
 import { SecuryUser } from '@/middlewares';
 import { GetAllOrdersParams } from '@/schemas';
 
@@ -53,9 +53,48 @@ async function getAll({ page, limit, status, minTotal, maxTotal, minDate, maxDat
   return { data: orders, total, page, limit };
 }
 
+async function simulatePayment(orderId: number) {
+  const order = await ordersRepository.findById(orderId);
+  if (!order) throw notFoundError('Order not found');
+  if (order.status !== 'RECEBIDO') throw badRequestError('Order has already been paid');
+
+  const isPaymentApproved = Math.random() < 0.8;
+  return { success: isPaymentApproved };
+}
+
+async function paymentDone(orderId: number) {
+  return await ordersRepository.completePayment(orderId, 'EM_PREPARACAO');
+}
+
+async function checkStockAvailability(items: { productId: number; quantity: number }[]) {
+  const insufficientStockItems = [];
+
+  for (const item of items) {
+    const product = await productRepository.findStockById(item.productId);
+
+    if (!product) insufficientStockItems.push({ productId: item.productId, reason: 'Product not found' });
+    else if (!product.status) insufficientStockItems.push({ productId: item.productId, reason: 'Product is disabled' });
+    else if (product.stock < item.quantity) {
+      insufficientStockItems.push({
+        productId: item.productId,
+        reason: 'Insufficient stock',
+        availableStock: product ? product.stock : 0,
+        requestedQuantity: item.quantity,
+      });
+    }
+  }
+
+  if (insufficientStockItems.length > 0) {
+    throw conflictError(`Payment failed because some products have any problem`, insufficientStockItems);
+  }
+}
+
 export const ordersService = {
   create,
   getByClientId,
   getById,
   getAll,
+  simulatePayment,
+  paymentDone,
+  checkStockAvailability,
 };
