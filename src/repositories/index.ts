@@ -3,3 +3,4 @@ export * from './clients-repository';
 export * from './products-repository';
 export * from './carts-repository';
 export * from './orders-repository';
+export * from './reports-repository';

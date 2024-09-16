@@ -98,20 +98,23 @@ model Item {
 }
 
 model Report {
-  id         Int      @id @default(autoincrement())
-  period     DateTime
+  id         Int        @id @default(autoincrement())
+  period     PeriodType @default(month)
   totalSales Decimal
   totalOrders Int
+  filters    Json     
   path       String
-  createdAt  DateTime @default(now())
+  key        String?
+  createdAt  DateTime  @default(now())
 
   @@map("reports")
 }
 
+
 model Image {
   id         Int      @id @default(autoincrement())
   productId  Int
-  path       String 
+  path       String
   key        String?   
   Product    Product  @relation(fields: [productId], references: [id])
 
@@ -144,3 +147,12 @@ enum OrderStatus {
   ENTREGUE        @map("Entregue")
 }
 
+enum PeriodType {
+  day
+  week
+  month
+  quarter
+  half_year
+  year
+}
+  

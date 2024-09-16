@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { userService } from '@/services';
 import { LoginInput } from '@/schemas';
 import { unauthorizedError } from '@/errors';
-import { AuthenticatedRequest } from '@/middlewares';
+import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 
 export async function create(req: Request, res: Response, next: NextFunction): Promise<Response> {
   const { username, email, password } = req.body;
@@ -81,21 +81,21 @@ export async function getAll(req: AuthenticatedRequest, res: Response, next: Nex
   }
 }
 
-export async function validateUser(id: number, userId: number, type: string): Promise<void> {
-  if (type !== 'admin' && id !== userId) {
+export async function validateUser(id: number, user: SecuryUser): Promise<void> {
+  if (user.type !== 'admin' && id !== user.id) {
     throw unauthorizedError("You don't have permission to access other user");
   }
 }
 
 export async function getById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
-  const { id: userId, type } = req.user;
+  const { user } = req;
 
   try {
-    await validateUser(Number(id), userId, type);
+    await validateUser(Number(id), user);
 
-    const user = await userService.getById(Number(id));
-    return res.status(httpStatus.OK).send(user);
+    const newUser = await userService.getById(Number(id));
+    return res.status(httpStatus.OK).send(newUser);
   } catch (error) {
     next(error);
   }
@@ -104,10 +104,10 @@ export async function getById(req: AuthenticatedRequest, res: Response, next: Ne
 export async function update(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
   const { username, email } = req.body;
-  const { id: userId, type } = req.user;
+  const { user } = req;
 
   try {
-    await validateUser(Number(id), userId, type);
+    await validateUser(Number(id), user);
 
     const updatedUser = await userService.update(Number(id), {
       username,
@@ -121,10 +121,10 @@ export async function update(req: AuthenticatedRequest, res: Response, next: Nex
 
 export async function deleteById(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
-  const { id: userId, type } = req.user;
+  const { user } = req;
 
   try {
-    await validateUser(Number(id), userId, type);
+    await validateUser(Number(id), user);
 
     await userService.deleteById(Number(id));
     return res.status(httpStatus.NO_CONTENT).send(`User with id ${id} deleted successfully`);

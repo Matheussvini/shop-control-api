@@ -1,7 +1,7 @@
 import { Client, Prisma } from '@prisma/client';
 import { conflictError, notFoundError } from '@/errors';
 import { CreateClientInput } from '@/schemas';
-import { clientRepository } from '@/repositories';
+import { clientRepository, userRepository } from '@/repositories';
 import { Pagination } from '@/types';
 
 async function validateUniqueClient(userId: number): Promise<void> {
@@ -10,7 +10,12 @@ async function validateUniqueClient(userId: number): Promise<void> {
 }
 
 async function create(data: CreateClientInput): Promise<Client> {
-  await validateUniqueClient(data.userId);
+  const { userId } = data;
+
+  const user = await userRepository.findById(userId);
+  if (!user) throw notFoundError('User not found');
+
+  await validateUniqueClient(userId);
 
   const client = await clientRepository.createClientWithAddress(data);
 
