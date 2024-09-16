@@ -12,9 +12,17 @@ export const getAllCartsSchema = Joi.object({
   page: Joi.number().min(1),
   limit: Joi.number().min(1),
   minDate: Joi.date(),
-  maxDate: Joi.date().greater(Joi.ref('minDate')),
+  maxDate: Joi.date().when('minDate', {
+    is: Joi.exist(),
+    then: Joi.date().greater(Joi.ref('minDate')),
+    otherwise: Joi.date(),
+  }),
   minPrice: Joi.number().min(0),
-  maxPrice: Joi.number().min(0).greater(Joi.ref('minPrice')),
+  maxPrice: Joi.number().when('minPrice', {
+    is: Joi.exist(),
+    then: Joi.number().greater(Joi.ref('minPrice')),
+    otherwise: Joi.number().min(0),
+  }),
   productName: Joi.string().optional(),
 });
 

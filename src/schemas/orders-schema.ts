@@ -9,9 +9,17 @@ export const getAllOrdersSchema = Joi.object({
     .valid(...Object.values(OrderStatus))
     .optional(),
   minTotal: Joi.number().min(0).optional(),
-  maxTotal: Joi.number().min(0).greater(Joi.ref('minTotal')).optional(),
+  maxTotal: Joi.number().when('minTotal', {
+    is: Joi.exist(),
+    then: Joi.number().greater(Joi.ref('minTotal')),
+    otherwise: Joi.number().min(0),
+  }),
   minDate: Joi.date().optional(),
-  maxDate: Joi.date().greater(Joi.ref('minDate')).optional(),
+  maxDate: Joi.date().when('minDate', {
+    is: Joi.exist(),
+    then: Joi.date().greater(Joi.ref('minDate')),
+    otherwise: Joi.date(),
+  }),
 });
 
 export const updateStatusSchema = Joi.object({
