@@ -35,7 +35,8 @@ export const updateProductSchema = Joi.object({
   description: Joi.string().min(3).optional(),
   price: Joi.number().min(0).optional(),
   stock: Joi.number().min(0).optional(),
-}).or('name', 'description', 'price', 'stock');
+  status: Joi.boolean().optional(),
+}).or('name', 'description', 'price', 'stock', 'status');
 
 type OmitProduct = Omit<Product, keyof AutoProperty>;
 

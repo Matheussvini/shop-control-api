@@ -79,10 +79,10 @@ export async function getProductById(req: AuthenticatedRequest, res: Response, n
 
 export async function updateProduct(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
-  const { name, description, price, stock } = req.body;
+  const { name, description, price, stock, status } = req.body;
 
   try {
-    const updatedProduct = await productService.update(Number(id), { name, description, price, stock });
+    const updatedProduct = await productService.update(Number(id), { name, description, price, stock, status });
 
     return res.status(httpStatus.OK).send(updatedProduct);
   } catch (error) {

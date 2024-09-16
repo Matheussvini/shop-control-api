@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Prisma } from '@prisma/client';
 import { productRepository } from '@/repositories';
@@ -72,12 +74,17 @@ async function deleteImage(id: number) {
   const image = await productRepository.findImageById(id);
   if (!image) throw notFoundError('Image not found');
 
-  const deleteParams = {
-    Bucket: process.env.AWS_BUCKET_NAME || '',
-    Key: image.key,
-  };
+  if (image.key) {
+    const s3Params = {
+      Bucket: process.env.AWS_BUCKET_NAME || '',
+      Key: image.key,
+    };
 
-  await s3.send(new DeleteObjectCommand(deleteParams));
+    await s3.send(new DeleteObjectCommand(s3Params));
+  } else {
+    const filePath = path.resolve(process.cwd(), 'tmp', 'uploads', image.path);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  }
 
   return await productRepository.deleteImage(id);
 }
