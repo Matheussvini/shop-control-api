@@ -80,8 +80,21 @@ async function getRevenueData(
 
   return prisma.$queryRaw(query) as Promise<RevenueData[]>;
 }
+
+async function getAll(period: $Enums.PeriodType, startDate?: Date, endDate?: Date) {
+  return prisma.report.findMany({
+    where: {
+      period,
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+  });
+}
 export const reportsRepository = {
   getSalesData,
   create,
   getRevenueData,
+  getAll,
 };

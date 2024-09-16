@@ -144,7 +144,14 @@ async function generateRevenueReport(period: $Enums.PeriodType, startDate?: Date
   return { message: 'Revenue report generated successfully', fileUrl };
 }
 
+async function getAll(period?: $Enums.PeriodType, startDate?: Date, endDate?: Date) {
+  const reports = await reportsRepository.getAll(period, startDate, endDate);
+
+  return reports;
+}
+
 export const reportsService = {
   generateSalesReport,
   generateRevenueReport,
+  getAll,
 };

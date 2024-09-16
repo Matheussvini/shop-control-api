@@ -37,3 +37,19 @@ export async function createRevenueReport(req: AuthenticatedRequest, res: Respon
     next(error);
   }
 }
+
+export async function getAllReports(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { period, startDate, endDate } = req.query;
+
+  try {
+    const reports = await reportsService.getAll(
+      period as $Enums.PeriodType,
+      startDate ? new Date(startDate as string) : undefined,
+      endDate ? new Date(endDate as string) : undefined,
+    );
+
+    return res.status(httpStatus.OK).send(reports);
+  } catch (error) {
+    next(error);
+  }
+}
