@@ -39,6 +39,10 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       description: 'Shopping cart management',
     },
     {
+      name: 'Orders',
+      description: 'Orders management',
+    },
+    {
       name: 'Reports',
       description: 'Reports management',
     },
@@ -72,6 +76,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       get: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get all users',
         description: 'Get all users with pagination - only admin',
         parameters: [
@@ -117,7 +122,20 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/Users',
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Users',
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -134,6 +152,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/users/confirm-email/{token}': {
       get: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Confirm user email',
         description: 'Confirm user email to create the user',
         parameters: [
@@ -192,6 +211,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/users/{id}': {
       get: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get user by id',
         description: 'Get user by id',
         parameters: [
@@ -227,6 +247,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       patch: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Update user',
         description: 'Update user by id',
         parameters: [
@@ -268,6 +289,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       delete: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Delete user',
         description: 'Delete user by id',
         parameters: [
@@ -298,6 +320,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/users/password/{id}': {
       put: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Change user password',
         description: 'Change user password by id',
         parameters: [
@@ -338,6 +361,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/users/admin': {
       post: {
         tags: ['Users'],
+        security: [{ bearerAuth: [] }],
         summary: 'Create a new admin',
         description: 'Create a new admin user',
         requestBody: {
@@ -369,6 +393,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/clients': {
       post: {
         tags: ['Clients'],
+        security: [{ bearerAuth: [] }],
         summary: 'Create a new client',
         description: 'Create a new client. It is necessary to be an user to create a client',
         requestBody: {
@@ -376,7 +401,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/getAllClientsInput',
+                $ref: '#/components/schemas/CreateClientInput',
               },
             },
           },
@@ -401,6 +426,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       get: {
         tags: ['Clients'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get all clients',
         description: 'Get all clients with pagination - only admin',
         parameters: [
@@ -446,7 +472,20 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/Clients',
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Client',
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -463,6 +502,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/clients/{id}': {
       get: {
         tags: ['Clients'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get client by id',
         description: 'Get client by id',
         parameters: [
@@ -498,6 +538,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       patch: {
         tags: ['Clients'],
+        security: [{ bearerAuth: [] }],
         summary: 'Update client',
         description: 'Update client by id',
         parameters: [
@@ -536,6 +577,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       delete: {
         tags: ['Clients'],
+        security: [{ bearerAuth: [] }],
         summary: 'Delete client',
         description: 'Delete client by id',
         parameters: [
@@ -566,6 +608,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/products': {
       post: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Create a new product',
         description: 'Create a new product - only admin',
         requestBody: {
@@ -592,6 +635,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       get: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get all products',
         description: 'Get all products with pagination',
         parameters: [
@@ -658,7 +702,20 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/Products',
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Products',
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -675,6 +732,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/products/{id}': {
       get: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get product by id',
         description: 'Get product by id',
         parameters: [
@@ -710,6 +768,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       patch: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Update product',
         description: 'Update product by id - only admin',
         parameters: [
@@ -748,6 +807,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       delete: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Delete product',
         description: 'Delete product by id - only admin',
         parameters: [
@@ -778,6 +838,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/products/upload/{productId}': {
       post: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Upload a product image',
         description: 'Upload product image by productId - only admin',
         parameters: [
@@ -824,6 +885,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/products/image/{productId}': {
       delete: {
         tags: ['Products'],
+        security: [{ bearerAuth: [] }],
         summary: 'Delete product image',
         description: 'Delete product image by id - only admin',
         parameters: [
@@ -854,6 +916,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/carts': {
       post: {
         tags: ['Carts'],
+        security: [{ bearerAuth: [] }],
         summary: 'Change cart',
         description: 'Change products in cart',
         requestBody: {
@@ -884,6 +947,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       get: {
         tags: ['Carts'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get all carts',
         description: 'Get all carts with pagination - only admin',
         parameters: [
@@ -943,7 +1007,20 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/Carts',
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Carts',
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -960,6 +1037,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/carts/{clientId}': {
       get: {
         tags: ['Carts'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get cart by clientId',
         description: 'Get cart by clientId',
         parameters: [
@@ -997,18 +1075,9 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/orders': {
       post: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Create order',
         description: 'Create a new order - only client - products in cart will be used',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/CreateOrderInput',
-              },
-            },
-          },
-        },
         responses: {
           201: {
             description: 'Order created successfully',
@@ -1029,6 +1098,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       get: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get all orders',
         description: 'Get all orders with pagination - only admin',
         parameters: [
@@ -1088,7 +1158,20 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/Orders',
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Orders',
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -1105,6 +1188,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/orders/{id}': {
       get: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get order by id',
         description: 'Get order by id',
         parameters: [
@@ -1140,6 +1224,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
       },
       delete: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Delete order',
         description: 'Delete order by id - only admin',
         parameters: [
@@ -1170,6 +1255,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/orders/client/{clientId}': {
       get: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Get orders by clientId',
         description: 'Get orders by clientId',
         parameters: [
@@ -1204,6 +1290,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/orders/payment/{orderId}': {
       post: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Do payment',
         description: 'Do payment for order',
         parameters: [
@@ -1237,6 +1324,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
     '/orders/status/{orderId}/{status}': {
       patch: {
         tags: ['Orders'],
+        security: [{ bearerAuth: [] }],
         summary: 'Update order status',
         description: 'Update order status by orderId',
         parameters: [
@@ -1269,6 +1357,588 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
             description: 'Order not found',
           },
         },
+      },
+    },
+    '/reports': {
+      get: {
+        tags: ['Reports'],
+        security: [{ bearerAuth: [] }],
+        summary: 'Get all reports',
+        description: 'Get all reports - only admin',
+        parameters: [
+          {
+            in: 'query',
+            name: 'startDate',
+            required: false,
+            type: 'string',
+            description: 'Minimum date filter',
+          },
+          {
+            in: 'query',
+            name: 'endDate',
+            required: false,
+            type: 'string',
+            description: 'Maximum date filter',
+          },
+          {
+            in: 'query',
+            name: 'period',
+            required: false,
+            type: $Enums.PeriodType,
+            description: 'Period type filter',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Reports found',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/PaginatedResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Reports',
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad request',
+          },
+          401: {
+            description: 'Authentication token invalid',
+          },
+        },
+      },
+    },
+    '/reports/sales': {
+      post: {
+        tags: ['Reports'],
+        security: [{ bearerAuth: [] }],
+        summary: 'Create sales report',
+        description: 'Create a new sales report - only admin',
+        parameters: [
+          {
+            in: 'query',
+            name: 'startDate',
+            required: false,
+            type: 'string',
+            description: 'Minimum date filter',
+          },
+          {
+            in: 'query',
+            name: 'endDate',
+            required: false,
+            type: 'string',
+            description: 'Maximum date filter',
+          },
+          {
+            in: 'query',
+            name: 'productId',
+            required: false,
+            type: 'number',
+            description: 'Product id filter',
+          },
+          {
+            in: 'query',
+            name: 'period',
+            required: false,
+            type: $Enums.PeriodType,
+            description: 'Period type filter',
+          },
+        ],
+        responses: {
+          201: {
+            description: 'Sales report generated successfully',
+          },
+          400: {
+            description: 'Bad request',
+          },
+          401: {
+            description: 'Authentication token invalid',
+          },
+          404: {
+            description: 'No sales data found for the selected filters',
+          },
+        },
+      },
+    },
+    '/reports/revenue': {
+      post: {
+        tags: ['Reports'],
+        security: [{ bearerAuth: [] }],
+        summary: 'Create revenue report',
+        description: 'Create a new revenue report - only admin',
+        parameters: [
+          {
+            in: 'query',
+            name: 'startDate',
+            required: false,
+            type: 'string',
+            description: 'Minimum date filter',
+          },
+          {
+            in: 'query',
+            name: 'endDate',
+            required: false,
+            type: 'string',
+            description: 'Maximum date filter',
+          },
+          {
+            in: 'query',
+            name: 'productId',
+            required: false,
+            type: 'number',
+            description: 'Product id filter',
+          },
+          {
+            in: 'query',
+            name: 'period',
+            required: false,
+            type: $Enums.PeriodType,
+            description: 'Period type filter',
+          },
+        ],
+        responses: {
+          201: {
+            description: 'Revenue report generated successfully',
+          },
+          400: {
+            description: 'Bad request',
+          },
+          401: {
+            description: 'Authentication token invalid',
+          },
+          404: {
+            description: 'No revenue data found for the selected filters',
+          },
+        },
+      },
+    },
+    '/reports/{id}': {
+      delete: {
+        tags: ['Reports'],
+        security: [{ bearerAuth: [] }],
+        summary: 'Delete report',
+        description: 'Delete report by id - only admin',
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            type: 'number',
+            description: 'Report id',
+          },
+        ],
+        responses: {
+          204: {
+            description: 'Report deleted successfully',
+          },
+          400: {
+            description: 'Bad request',
+          },
+          401: {
+            description: 'Authentication token invalid',
+          },
+          404: {
+            description: 'Report not found',
+          },
+        },
+      },
+    },
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+    schemas: {
+      PaginatedResponse: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+            },
+          },
+          total: {
+            type: 'integer',
+            example: 1,
+          },
+          page: {
+            type: 'integer',
+            example: 1,
+          },
+          limit: {
+            type: 'integer',
+            example: 10,
+          },
+        },
+      },
+      CreateUserInput: {
+        type: 'object',
+        properties: {
+          username: {
+            type: 'string',
+          },
+          email: {
+            type: 'string',
+          },
+          password: {
+            type: 'string',
+          },
+        },
+        required: ['username', 'email', 'password'],
+      },
+      LoginInput: {
+        type: 'object',
+        properties: {
+          email: {
+            type: 'string',
+          },
+          password: {
+            type: 'string',
+          },
+        },
+        required: ['email', 'password'],
+      },
+      UpdateUserInput: {
+        type: 'object',
+        properties: {
+          username: {
+            type: 'string',
+          },
+          email: {
+            type: 'string',
+          },
+          type: {
+            type: 'string',
+          },
+        },
+        required: ['username', 'email', 'type'],
+      },
+      ChangePasswordInput: {
+        type: 'object',
+        properties: {
+          password: {
+            type: 'string',
+          },
+        },
+        required: ['password'],
+      },
+      CreateClientInput: {
+        type: 'object',
+        properties: {
+          userId: {
+            type: 'number',
+          },
+          fullName: {
+            type: 'string',
+          },
+          contact: {
+            type: 'string',
+          },
+          address: {
+            type: 'object',
+            properties: {
+              cep: {
+                type: 'string',
+              },
+              logradouro: {
+                type: 'string',
+              },
+              numero: {
+                type: 'string',
+              },
+              complemento: {
+                type: 'string',
+              },
+              bairro: {
+                type: 'string',
+              },
+              cidade: {
+                type: 'string',
+              },
+              estado: {
+                type: 'string',
+              },
+            },
+            required: ['cep', 'logradouro', 'numero', 'bairro', 'cidade', 'estado'],
+          },
+        },
+        required: ['fullName', 'contact', 'status'],
+      },
+      getAllClientsInput: {
+        type: 'object',
+        properties: {
+          fullName: {
+            type: 'string',
+          },
+          contact: {
+            type: 'string',
+          },
+          status: {
+            type: 'boolean',
+          },
+        },
+        required: ['fullName', 'contact', 'status'],
+      },
+      UpdateClientInput: {
+        type: 'object',
+        properties: {
+          fullName: {
+            type: 'string',
+          },
+          contact: {
+            type: 'string',
+          },
+          status: {
+            type: 'boolean',
+          },
+        },
+        required: ['fullName', 'contact', 'status'],
+      },
+      CreateProductInput: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+          description: {
+            type: 'string',
+          },
+          price: {
+            type: 'number',
+          },
+          stock: {
+            type: 'number',
+          },
+        },
+        required: ['name', 'price', 'stock', 'description'],
+      },
+      UpdateProductInput: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+          },
+          description: {
+            type: 'string',
+          },
+          price: {
+            type: 'number',
+          },
+          stock: {
+            type: 'number',
+          },
+          status: {
+            type: 'boolean',
+          },
+        },
+        required: ['name', 'description', 'price', 'stock', 'status'],
+      },
+      ChangeCartInput: {
+        type: 'object',
+        properties: {
+          clientId: {
+            type: 'number',
+          },
+          productId: {
+            type: 'number',
+          },
+          quantity: {
+            type: 'number',
+          },
+        },
+        required: ['clientId', 'productId', 'quantity'],
+      },
+      CreateOrderInput: {
+        type: 'object',
+        properties: {
+          clientId: {
+            type: 'number',
+          },
+        },
+        required: ['clientId'],
+      },
+      Reports: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/Report',
+        },
+      },
+      Report: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          totalSales: {
+            type: 'number',
+          },
+          totalOrders: {
+            type: 'number',
+          },
+          path: {
+            type: 'string',
+          },
+          createdAt: {
+            type: 'string',
+          },
+          period: {
+            type: 'string',
+          },
+          filters: {
+            type: 'object',
+          },
+          key: {
+            type: 'string',
+          },
+        },
+        required: ['id', 'totalSales', 'totalOrders', 'path', 'createdAt', 'period', 'filters', 'key'],
+      },
+      Orders: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/Order',
+        },
+      },
+      Order: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          clientId: {
+            type: 'number',
+          },
+          total: {
+            type: 'number',
+          },
+          status: {
+            type: 'string',
+          },
+          products: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Product',
+            },
+          },
+        },
+        required: ['id', 'clientId', 'total', 'status', 'products'],
+      },
+      Carts: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/Cart',
+        },
+      },
+      Cart: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          clientId: {
+            type: 'number',
+          },
+          products: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Product',
+            },
+          },
+        },
+        required: ['id', 'clientId', 'products'],
+      },
+      Products: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/Product',
+        },
+      },
+      Product: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          name: {
+            type: 'string',
+          },
+          price: {
+            type: 'number',
+          },
+          stock: {
+            type: 'number',
+          },
+          status: {
+            type: 'boolean',
+          },
+        },
+        required: ['id', 'name', 'price', 'stock', 'status'],
+      },
+      Clients: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/Client',
+        },
+      },
+      Client: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          fullName: {
+            type: 'string',
+          },
+          contact: {
+            type: 'string',
+          },
+          status: {
+            type: 'boolean',
+          },
+        },
+        required: ['id', 'fullName', 'contact', 'status'],
+      },
+      Users: {
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/User',
+        },
+      },
+      User: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+          },
+          username: {
+            type: 'string',
+          },
+          email: {
+            type: 'string',
+          },
+          type: {
+            type: 'string',
+          },
+        },
+        required: ['id', 'username', 'email', 'type'],
       },
     },
   },
