@@ -98,17 +98,17 @@ model Item {
 }
 
 model Report {
-  id         Int      @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   period     PeriodType @default(month)
-  startDate  DateTime?
-  endDate    DateTime?
   totalSales Decimal
   totalOrders Int
+  filters    Json     
   path       String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   @@map("reports")
 }
+
 
 model Image {
   id         Int      @id @default(autoincrement())
