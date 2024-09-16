@@ -20,3 +20,20 @@ export async function createSalesReport(req: AuthenticatedRequest, res: Response
     next(error);
   }
 }
+
+export async function createRevenueReport(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { period = 'month', startDate, endDate, productId } = req.query;
+
+  try {
+    const report = await reportsService.generateRevenueReport(
+      period as $Enums.PeriodType,
+      startDate ? new Date(startDate as string) : undefined,
+      endDate ? new Date(endDate as string) : undefined,
+      productId ? Number(productId) : undefined,
+    );
+
+    return res.status(httpStatus.CREATED).send(report);
+  } catch (error) {
+    next(error);
+  }
+}

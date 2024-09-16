@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { $Enums } from '@prisma/client';
 import { stringify } from 'csv';
-import { S3Client, PutObjectCommand, ObjectCannedACL } from '@aws-sdk/client-s3'; // Atualizando import
+import { S3Client, PutObjectCommand, ObjectCannedACL } from '@aws-sdk/client-s3';
 import { ordersRepository, reportsRepository } from '@/repositories';
-import { multerConfig } from '@/config'; // Importando o multer config
+import { multerConfig } from '@/config';
 import { notFoundError } from '@/errors';
 
 const s3 = new S3Client({
@@ -105,6 +105,46 @@ async function generateSalesReport(period: $Enums.PeriodType, startDate?: Date, 
   return { message: 'Sales report generated successfully', fileUrl };
 }
 
+async function generateRevenueReport(period: $Enums.PeriodType, startDate?: Date, endDate?: Date, productId?: number) {
+  const revenueData = await reportsRepository.getRevenueData(period, startDate, endDate, productId);
+  if (!revenueData.length) throw notFoundError('No revenue data found for the selected filters');
+
+  const totalSales = revenueData.reduce((acc, item) => acc + Number(item.totalRevenue), 0);
+
+  const fileName = `revenue_report_${Date.now()}.csv`;
+
+  const csvData = revenueData.map((item) => [item.productName, Number(item.totalRevenue), item.totalOrders]);
+  const header = ['Product Name', 'Total Revenue', 'Total Orders'];
+  const csvString = await new Promise<string>((resolve, reject) => {
+    stringify([header, ...csvData], (err, output) => {
+      if (err) {
+        console.log(err);
+        reject('Error generating CSV');
+      }
+      resolve(output);
+    });
+  });
+
+  const fileUrl = await uploadCSV(fileName, csvString);
+
+  const filters = {
+    startDate,
+    endDate,
+    productId,
+  };
+
+  await reportsRepository.create({
+    period,
+    totalSales,
+    totalOrders: revenueData.length,
+    path: fileUrl,
+    filters,
+  });
+
+  return { message: 'Revenue report generated successfully', fileUrl };
+}
+
 export const reportsService = {
   generateSalesReport,
+  generateRevenueReport,
 };
