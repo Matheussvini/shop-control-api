@@ -17,16 +17,11 @@ async function getSalesData(
 
   const whereClause: Prisma.Sql[] = [];
 
-  // Considerando apenas pedidos com status diferente de 'RECEBIDO'
   whereClause.push(Prisma.sql`o."status" != 'Recebido'`);
 
-  if (startDate && endDate) {
-    whereClause.push(Prisma.sql`o."createdAt" BETWEEN ${startDate} AND ${endDate}`);
-  }
+  if (startDate && endDate) whereClause.push(Prisma.sql`o."createdAt" BETWEEN ${startDate} AND ${endDate}`);
 
-  if (productId) {
-    whereClause.push(Prisma.sql`i."productId" = ${productId}`);
-  }
+  if (productId) whereClause.push(Prisma.sql`i."productId" = ${productId}`);
 
   const whereQuery = whereClause.length > 0 ? Prisma.sql`WHERE ${Prisma.join(whereClause, ' AND ')}` : Prisma.empty;
 
