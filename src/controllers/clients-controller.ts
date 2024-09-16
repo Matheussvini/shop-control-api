@@ -1,12 +1,15 @@
 import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
+import { validateUser } from './users-controller';
 import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 import { clientService, GetAllClientsParams } from '@/services';
 import { clientRepository } from '@/repositories';
 import { notFoundError, unauthorizedError } from '@/errors';
 
 export async function createClient(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
+  const { user } = req;
   try {
+    await validateUser(req.body.userId, user);
     const client = await clientService.create(req.body);
 
     return res.status(httpStatus.CREATED).send(client);
@@ -39,7 +42,7 @@ export async function getAllClients(req: AuthenticatedRequest, res: Response, ne
 
 export async function validateClient(clientId: number, user: SecuryUser) {
   const client = await clientRepository.findByUserId(user.id);
-  if (user.type !== 'admin' && client?.id !== clientId)
+  if (user.type !== 'admin' && client.id !== clientId)
     throw unauthorizedError("You don't have permission to access other user");
 
   const checkClientId = await clientRepository.findById(clientId);
