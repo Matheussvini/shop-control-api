@@ -2,10 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { $Enums } from '@prisma/client';
 import { stringify } from 'csv';
-import multer from 'multer';
+import { S3Client, PutObjectCommand, ObjectCannedACL } from '@aws-sdk/client-s3'; // Atualizando import
 import { ordersRepository, reportsRepository } from '@/repositories';
 import { multerConfig } from '@/config'; // Importando o multer config
 import { notFoundError } from '@/errors';
+
+const s3 = new S3Client({
+  region: process.env.AWS_DEFAULT_REGION,
+});
 
 // Função auxiliar para garantir que o diretório exista
 function ensureDirectoryExistence(filePath: string) {
@@ -16,31 +20,52 @@ function ensureDirectoryExistence(filePath: string) {
 }
 
 // Função auxiliar para salvar o arquivo CSV
+
 async function uploadCSV(fileName: string, csvData: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    multer(multerConfig).single('file');
+    const storageType = process.env.STORAGE_TYPE;
 
     // Criar um buffer do conteúdo CSV para fazer o upload
     const buffer = Buffer.from(csvData);
 
-    // Caminho temporário para salvar o arquivo localmente
-    const tempPath = path.join(multerConfig.dest, fileName);
+    if (storageType === 's3') {
+      // Upload para o S3 utilizando PutObjectCommand
+      const s3Params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ACL: ObjectCannedACL.public_read_write, // Usando enum ObjectCannedACL
+        ContentType: 'text/csv',
+      };
 
-    ensureDirectoryExistence(tempPath);
+      const command = new PutObjectCommand(s3Params);
 
-    // Escrevendo o arquivo no sistema de arquivos
-    fs.writeFile(tempPath, buffer, (err) => {
-      if (err) {
-        reject({ message: 'Error writing CSV file', error: err });
-      } else {
-        // Gerar a URL apropriada com base no armazenamento local ou S3
-        const fileUrl = `${process.env.API_URL}/uploads/${fileName}`;
-        resolve(fileUrl); // Retorna o caminho local ou a URL no S3
-      }
-    });
+      s3.send(command)
+        .then(() => {
+          const s3Url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_DEFAULT_REGION}.amazonaws.com/${fileName}`;
+          resolve(s3Url); // Retorna a URL pública do arquivo no S3
+        })
+        .catch((err) => {
+          reject({ message: 'Error uploading file to S3', error: err });
+        });
+    } else {
+      // Caminho temporário para salvar o arquivo localmente
+      const tempPath = path.join(multerConfig.dest, fileName);
+
+      ensureDirectoryExistence(tempPath);
+
+      // Escrevendo o arquivo no sistema de arquivos local
+      fs.writeFile(tempPath, buffer, (err) => {
+        if (err) {
+          reject({ message: 'Error writing CSV file', error: err });
+        } else {
+          const fileUrl = `${process.env.API_URL}/uploads/${fileName}`;
+          resolve(fileUrl); // Retorna o caminho local
+        }
+      });
+    }
   });
 }
-
 async function generateSalesReport(period: $Enums.PeriodType, startDate?: Date, endDate?: Date, productId?: number) {
   // Obtendo dados de vendas
   const salesData = await reportsRepository.getSalesData(period, startDate, endDate, productId);
