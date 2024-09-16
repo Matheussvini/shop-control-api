@@ -104,15 +104,17 @@ export async function getById(req: AuthenticatedRequest, res: Response, next: Ne
 
 export async function update(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { id } = req.params;
-  const { username, email } = req.body;
+  const { username, email, type } = req.body;
   const { user } = req;
 
   try {
+    if (type && user.type !== 'admin') throw unauthorizedError("You don't have permission to change user type");
     await validateUser(Number(id), user);
 
     const updatedUser = await userService.update(Number(id), {
       username,
       email,
+      type,
     });
     return res.status(httpStatus.OK).send(updatedUser);
   } catch (error) {

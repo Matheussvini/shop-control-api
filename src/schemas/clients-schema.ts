@@ -10,7 +10,7 @@ export const createClientSchema = Joi.object<CreateClientInput>({
     cep: Joi.string().length(8).required(),
     logradouro: Joi.string().min(3).max(255).required(),
     numero: Joi.string().min(1).max(10).required(),
-    complemento: Joi.string().min(1).max(255),
+    complemento: Joi.string().max(255).optional(),
     bairro: Joi.string().min(3).max(255).required(),
     cidade: Joi.string().min(3).max(255).required(),
     estado: Joi.string().length(2).required(),

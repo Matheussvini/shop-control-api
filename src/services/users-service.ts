@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Prisma, User } from '@prisma/client';
 import nodemailer from 'nodemailer';
 import { CreateUserInput, LoginInput, UpdateUserInput } from '@/schemas';
-import { conflictError, invalidCredentialsError, notFoundError, unauthorizedError } from '@/errors';
+import { badRequestError, conflictError, invalidCredentialsError, notFoundError, unauthorizedError } from '@/errors';
 import { userRepository } from '@/repositories';
 
 async function validateUniqueUserData({ email }: Pick<User, 'email'>) {
@@ -130,6 +130,8 @@ async function getById(id: number) {
 
 async function update(id: number, data: UpdateUserInput) {
   const user = await getById(id);
+
+  if (user.type === data.type) throw badRequestError('User is already of this type');
 
   if (data.email && data.email !== user.email) {
     await validateUniqueUserData({
