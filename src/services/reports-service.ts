@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { $Enums } from '@prisma/client';
 import { stringify } from 'csv';
-import { S3Client, PutObjectCommand, ObjectCannedACL } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, ObjectCannedACL, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ordersRepository, reportsRepository } from '@/repositories';
 import { multerConfig } from '@/config';
 import { notFoundError } from '@/errors';
@@ -18,7 +18,7 @@ function ensureDirectoryExistence(filePath: string) {
   }
 }
 
-async function uploadCSV(fileName: string, csvData: string): Promise<string> {
+async function uploadCSV(fileName: string, csvData: string): Promise<{ fileUrl: string; key?: string }> {
   return new Promise((resolve, reject) => {
     const storageType = process.env.STORAGE_TYPE;
 
@@ -38,7 +38,7 @@ async function uploadCSV(fileName: string, csvData: string): Promise<string> {
       s3.send(command)
         .then(() => {
           const s3Url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_DEFAULT_REGION}.amazonaws.com/${fileName}`;
-          resolve(s3Url);
+          resolve({ fileUrl: s3Url, key: fileName });
         })
         .catch((err) => {
           reject({ message: 'Error uploading file to S3', error: err });
@@ -52,12 +52,13 @@ async function uploadCSV(fileName: string, csvData: string): Promise<string> {
         if (err) reject({ message: 'Error writing CSV file', error: err });
         else {
           const fileUrl = `${process.env.API_URL}/uploads/${fileName}`;
-          resolve(fileUrl);
+          resolve({ fileUrl });
         }
       });
     }
   });
 }
+
 async function generateSalesReport(period: $Enums.PeriodType, startDate?: Date, endDate?: Date, productId?: number) {
   const salesData = await reportsRepository.getSalesData(period, startDate, endDate, productId);
   if (!salesData.length) throw notFoundError('No sales data found for the selected filters');
@@ -86,7 +87,7 @@ async function generateSalesReport(period: $Enums.PeriodType, startDate?: Date, 
     });
   });
 
-  const fileUrl = await uploadCSV(fileName, csvString);
+  const { fileUrl, key } = await uploadCSV(fileName, csvString);
 
   const filters = {
     startDate,
@@ -99,6 +100,7 @@ async function generateSalesReport(period: $Enums.PeriodType, startDate?: Date, 
     totalSales,
     totalOrders,
     path: fileUrl,
+    key,
     filters,
   });
 
@@ -125,7 +127,7 @@ async function generateRevenueReport(period: $Enums.PeriodType, startDate?: Date
     });
   });
 
-  const fileUrl = await uploadCSV(fileName, csvString);
+  const { fileUrl, key } = await uploadCSV(fileName, csvString);
 
   const filters = {
     startDate,
@@ -138,6 +140,7 @@ async function generateRevenueReport(period: $Enums.PeriodType, startDate?: Date
     totalSales,
     totalOrders: revenueData.length,
     path: fileUrl,
+    key,
     filters,
   });
 
@@ -150,8 +153,34 @@ async function getAll(period?: $Enums.PeriodType, startDate?: Date, endDate?: Da
   return reports;
 }
 
+async function deleteReportById(id: number) {
+  const report = await reportsRepository.findById(id);
+
+  if (!report) throw notFoundError('Report not found');
+
+  if (report.key) {
+    const s3Params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: report.key,
+    };
+
+    const command = new DeleteObjectCommand(s3Params);
+
+    await s3.send(command);
+  } else {
+    const filePath = path.join(multerConfig.dest, path.basename(report.path));
+
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  }
+
+  await reportsRepository.deleteById(id);
+
+  return { message: 'Report deleted successfully' };
+}
+
 export const reportsService = {
   generateSalesReport,
   generateRevenueReport,
   getAll,
+  deleteReportById,
 };

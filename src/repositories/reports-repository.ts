@@ -92,9 +92,24 @@ async function getAll(period: $Enums.PeriodType, startDate?: Date, endDate?: Dat
     },
   });
 }
+
+async function findById(id: number) {
+  return prisma.report.findUnique({
+    where: { id },
+  });
+}
+
+async function deleteById(id: number) {
+  return prisma.report.delete({
+    where: { id },
+  });
+}
+
 export const reportsRepository = {
   getSalesData,
   create,
   getRevenueData,
   getAll,
+  findById,
+  deleteById,
 };

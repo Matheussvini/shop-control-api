@@ -53,3 +53,14 @@ export async function getAllReports(req: AuthenticatedRequest, res: Response, ne
     next(error);
   }
 }
+
+export async function deleteReport(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { id } = req.params;
+
+  try {
+    const result = await reportsService.deleteReportById(Number(id));
+    return res.status(httpStatus.OK).send(result);
+  } catch (error) {
+    next(error);
+  }
+}
