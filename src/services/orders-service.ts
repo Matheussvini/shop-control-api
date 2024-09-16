@@ -11,9 +11,25 @@ async function create(user: SecuryUser) {
 
   const { total, clientId, cart } = await cartsService.getCart(client.id);
   if (!cart.length) throw notFoundError('Shopping cart is empty');
-  const order = await ordersRepository.create({ clientId, total, cart });
 
+  await validateCartStock(cart);
+
+  const order = await ordersRepository.create({ clientId, total, cart });
   return order;
+}
+
+async function validateCartStock(cart) {
+  for (const item of cart) {
+    const product = item.Product;
+    if (product.status === false) {
+      throw conflictError(`Product "${product.name}" is unavailable`);
+    }
+    if (product.stock < item.quantity) {
+      throw conflictError(
+        `Insufficient stock for product "${product.name}". Available: ${product.stock}, Requested: ${item.quantity}`,
+      );
+    }
+  }
 }
 
 async function getByClientId(userId: number) {

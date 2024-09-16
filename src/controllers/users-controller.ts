@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { userService } from '@/services';
 import { LoginInput } from '@/schemas';
-import { unauthorizedError } from '@/errors';
+import { notFoundError, unauthorizedError } from '@/errors';
 import { AuthenticatedRequest, SecuryUser } from '@/middlewares';
 
 export async function create(req: Request, res: Response, next: NextFunction): Promise<Response> {
@@ -44,6 +44,7 @@ export async function confirmEmail(req: Request, res: Response, next: NextFuncti
   const { token } = req.params;
 
   try {
+    if (!token) throw notFoundError('Token not found');
     await userService.confirmEmail(token);
     return res.status(httpStatus.OK).send({
       message: 'Email confirmed, user created successfully!',
