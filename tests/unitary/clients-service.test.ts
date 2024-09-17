@@ -136,23 +136,48 @@ describe('clients-service', () => {
       it('should update a client', async () => {
         const updateData: Prisma.ClientUpdateInput = { fullName: 'John Updated' };
 
+        (clientRepository.findById as jest.Mock).mockResolvedValue(mockClient);
         (clientRepository.update as jest.Mock).mockResolvedValue({ ...mockClient, ...updateData });
 
         const result = await clientService.update(1, updateData);
 
         expect(result).toEqual({ ...mockClient, ...updateData });
+        expect(clientRepository.findById).toHaveBeenCalledWith(1); // Ensure that findById is called
         expect(clientRepository.update).toHaveBeenCalledWith(1, updateData);
+      });
+
+      it('should throw not found error if client does not exist', async () => {
+        (clientRepository.findById as jest.Mock).mockResolvedValue(null);
+
+        try {
+          const updateData: Prisma.ClientUpdateInput = { fullName: 'John Updated' };
+          await clientService.update(1, updateData);
+        } catch (error) {
+          expect(error).toEqual(notFoundError('Client not found'));
+        }
       });
     });
 
     describe('deleteById', () => {
       it('should delete a client by id', async () => {
+        (clientRepository.findById as jest.Mock).mockResolvedValue(mockClient);
         (clientRepository.deleteById as jest.Mock).mockResolvedValue(mockClient);
 
         const result = await clientService.deleteById(1);
 
         expect(result).toEqual(mockClient);
+        expect(clientRepository.findById).toHaveBeenCalledWith(1); // Ensure that findById is called
         expect(clientRepository.deleteById).toHaveBeenCalledWith(1);
+      });
+
+      it('should throw not found error if client does not exist', async () => {
+        (clientRepository.findById as jest.Mock).mockResolvedValue(null);
+
+        try {
+          await clientService.deleteById(1);
+        } catch (error) {
+          expect(error).toEqual(notFoundError('Client not found'));
+        }
       });
     });
   });
