@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=secret_password
+      - POSTGRES_DATABASE=shop_control
+    ports:
+      - '5435:5432' # Mapeia a porta 5432 do container para a porta configurada no hosto
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
+      interval: 1s
+      retries: 10
+      start_period: 1s
+      timeout: 10s
+
+  api:
+    image: matheussvini/shop-control
+    container_name: shop-control
+    ports:
+      - '5002:5002'
+    depends_on:
+      postgres:
+        condition: service_healthy
