@@ -52,10 +52,17 @@ async function getAll({ page, limit, status, minTotal, maxTotal, minDate, maxDat
   const filters: Prisma.OrderWhereInput = {};
 
   if (status) filters.status = { equals: status };
-  if (minTotal) filters.total = { gte: minTotal };
-  if (maxTotal) filters.total = { lte: maxTotal };
-  if (minDate) filters.createdAt = { gte: new Date(minDate) };
-  if (maxDate) filters.createdAt = { lte: new Date(maxDate) };
+  if (minTotal || maxTotal) {
+    filters.total = {};
+    if (minTotal) filters.total.gte = minTotal;
+    if (maxTotal) filters.total.lte = maxTotal;
+  }
+
+  if (minDate || maxDate) {
+    filters.createdAt = {};
+    if (minDate) filters.createdAt.gte = new Date(minDate);
+    if (maxDate) filters.createdAt.lte = new Date(maxDate);
+  }
 
   const [orders, total] = await Promise.all([
     ordersRepository.findMany({
@@ -130,4 +137,5 @@ export const ordersService = {
   checkStockAvailability,
   updateStatus,
   exclude,
+  validateCartStock,
 };

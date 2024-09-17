@@ -47,10 +47,17 @@ async function getCart(clientId: number) {
 async function getAll({ page, limit, minDate, maxDate, minPrice, maxPrice, productName }) {
   const filters: any = {};
 
-  if (minDate) filters.minDate = minDate;
-  if (maxDate) filters.maxDate = maxDate;
-  if (minPrice) filters.minPrice = minPrice;
-  if (maxPrice) filters.maxPrice = maxPrice;
+  if (minDate || maxDate) {
+    filters.date = {};
+    if (minDate) filters.date.gte = minDate;
+    if (maxDate) filters.date.lte = maxDate;
+  }
+
+  if (minPrice || maxPrice) {
+    filters.price = {};
+    if (minPrice) filters.price.gte = minPrice;
+    if (maxPrice) filters.price.lte = maxPrice;
+  }
   if (productName) filters.productName = productName;
   filters.page = page;
   filters.limit = limit;

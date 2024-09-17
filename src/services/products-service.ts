@@ -32,10 +32,16 @@ async function getAll({
 
   if (name) filters.name = { contains: name, mode: 'insensitive' };
   if (description) filters.description = { contains: description, mode: 'insensitive' };
-  if (minPrice) filters.price = { gte: minPrice };
-  if (maxPrice) filters.price = { lte: maxPrice };
-  if (minStock) filters.stock = { gte: minStock };
-  if (maxStock) filters.stock = { lte: maxStock };
+  if (minPrice || maxPrice) {
+    filters.price = {};
+    if (minPrice) filters.price.gte = minPrice;
+    if (maxPrice) filters.price.lte = maxPrice;
+  }
+  if (minStock || maxStock) {
+    filters.stock = {};
+    if (minStock) filters.stock.gte = minStock;
+    if (maxStock) filters.stock.lte = maxStock;
+  }
   if (status || status === false) filters.status = status;
 
   const [products, total] = await Promise.all([

@@ -49,10 +49,12 @@ async function getById(id: number) {
 }
 
 async function update(id: number, data: Prisma.ClientUpdateInput) {
+  await getById(id);
   return await clientRepository.update(id, data);
 }
 
 async function deleteById(id: number) {
+  await getById(id);
   return await clientRepository.deleteById(id);
 }
 
