@@ -51,7 +51,7 @@ async function sendEmailConfirmation(email: string, token: string) {
   });
 }
 
-async function create({ username, email, password, type }: CreateUserInput): Promise<void> {
+async function create({ username, email, password }: CreateUserInput): Promise<void> {
   await validateUniqueUserData({
     email,
   });
@@ -61,7 +61,6 @@ async function create({ username, email, password, type }: CreateUserInput): Pro
     username,
     email,
     password: hashPassword,
-    type,
   };
   const validationToken = jwt.sign(data, process.env.JWT_SECRET as string, {
     expiresIn: '1h',
@@ -86,6 +85,7 @@ async function confirmEmail(token: string) {
     type,
   });
 }
+
 async function login({ email, password }: LoginInput): Promise<UserWithToken> {
   const user = await userRepository.findByEmail(email);
   if (!user) throw invalidCredentialsError('Invalid email or password');
