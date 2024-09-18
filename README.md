@@ -76,13 +76,13 @@ Please refer to the image above to gain a better understanding of the database s
 
 \`\`\`
 src/
-├── controllers/ # Handles HTTP requests and responses
-├── services/ # Business logic for each feature
-├── repositories/ # Database interaction using Prisma
-├── schemas/ # Joi validation schemas for request data
-├── middlewares/ # Error handling and validation middleware
-├── tests/ # Unit and integration tests using Jest
-└── config/ # Configuration files (DB, S3, etc.)
+├── controllers/       # Handles HTTP requests and responses
+├── services/          # Business logic for each feature
+├── repositories/      # Database interaction using Prisma
+├── schemas/           # Joi validation schemas for request data
+├── middlewares/       # Error handling and validation middleware
+├── tests/             # Unit and integration tests using Jest
+└── config/            # Configuration files (DB, S3, etc.)
 \`\`\`
 
 ## Getting Started
