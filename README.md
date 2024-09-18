@@ -66,7 +66,7 @@ A comprehensive database schema has been designed and implemented for this proje
 
 To visualize the model of the database tables, refer to the following image:
 
-![Database Schema](https://github.com/Matheussvini/mini-twitter/blob/feat/tests/src/utils/images/db-diagram.png)
+![Database Schema](https://github.com/Matheussvini/shop-control-api/blob/main/src/utils/db-diagram.pdf)
 
 The database schema illustrates the organization of entities, their attributes, and the associations between them. It serves as a reference for understanding the data structure and relationships within the application.
 
