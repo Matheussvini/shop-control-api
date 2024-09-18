@@ -18,6 +18,7 @@ Shop Control API is a robust and scalable backend service designed for simplifie
 - [Testing](#how-to-run-tests)
 - [Production](#building-and-starting-for-production)
 - [Managing Environment Variables](#managing-environment-variables)
+- [Dockerization](#dockerization)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -76,13 +77,13 @@ Please refer to the image above to gain a better understanding of the database s
 
 \`\`\`
 src/
-├── controllers/       # Handles HTTP requests and responses
-├── services/          # Business logic for each feature
-├── repositories/      # Database interaction using Prisma
-├── schemas/           # Joi validation schemas for request data
-├── middlewares/       # Error handling and validation middleware
-├── tests/             # Unit and integration tests using Jest
-└── config/            # Configuration files (DB, S3, etc.)
+├── controllers/ # Handles HTTP requests and responses
+├── services/ # Business logic for each feature
+├── repositories/ # Database interaction using Prisma
+├── schemas/ # Joi validation schemas for request data
+├── middlewares/ # Error handling and validation middleware
+├── tests/ # Unit and integration tests using Jest
+└── config/ # Configuration files (DB, S3, etc.)
 \`\`\`
 
 ## Getting Started
@@ -217,6 +218,39 @@ When adding new environment variables, follow these steps:
 3. Update `docker-compose.yml` to include the new variables (without values).
 4. Add them (production version) to GitHub repository secrets.
 5. Update `.github/workflows/test.yml` to include the new variables for CI.
+
+## Dockerization
+
+The project is fully containerized using Docker and Docker Compose. This allows you to run the application in a containerized environment, including the database and the Node.js server.
+
+### Steps to run with Docker:
+
+1. Ensure Docker and Docker Compose are installed on your machine.
+2. Clone the repository and navigate to the project directory:
+   ```bash
+   git clone https://github.com/Matheussvini/shop-control-api.git
+   cd shop-control-api
+   ```
+3. Run the following command to start the application with Docker:
+   ```bash
+   docker-compose up --build
+   ```
+4. Docker will pull the necessary images, build the application, and start the services.
+
+### Docker Configuration Files
+
+- **docker-compose.yml**: This file defines the services (like the database and the application) that will run in containers.
+- **Dockerfile**: This file contains the instructions to build the Docker image for the Node.js application.
+
+### Accessing the Application
+
+Once the containers are up and running, you can access the API at:
+
+```
+http://localhost:5002
+```
+
+The PostgreSQL database will also be running in a container, and you can connect to it using the credentials defined in the `docker-compose.yml` file or your environment variables.
 
 ## Contributing
 
