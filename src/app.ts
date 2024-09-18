@@ -26,7 +26,10 @@ app
   .use('/orders', ordersRouter)
   .use('/reports', reportsRouter)
   .use('/uploads', express.static(path.resolve(process.cwd(), 'tmp', 'uploads')))
-  .use('/doc', swaggerRouter)
+  .use('/swagger', swaggerRouter)
+  .get('/doc', (req, res) => {
+    res.redirect('https://github.com/Matheussvini/shop-control-api#readme'); // Redireciona para o README do GitHub
+  })
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
