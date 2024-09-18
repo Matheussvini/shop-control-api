@@ -17,6 +17,10 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
   },
   servers: [
     {
+      url: 'https://shop-control-api.onrender.com',
+      description: 'Render Server',
+    },
+    {
       url: `http://localhost:${process.env.PORT}`,
       description: 'Development server',
     },
