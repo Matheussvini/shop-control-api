@@ -17,7 +17,13 @@ loadEnv();
 
 const app = express();
 app
-  .use(cors())
+  .use(
+    cors({
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  )
   .use(express.json())
   .use('/users', usersRouter)
   .use('/clients', clientsRouter)
