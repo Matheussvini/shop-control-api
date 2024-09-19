@@ -861,7 +861,7 @@ export const swaggerDocument: OpenAPIV3_1.Document = {
               schema: {
                 type: 'object',
                 properties: {
-                  image: {
+                  file: {
                     type: 'string',
                     format: 'binary',
                   },

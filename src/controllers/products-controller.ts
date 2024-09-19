@@ -22,17 +22,20 @@ export async function createProduct(req: AuthenticatedRequest, res: Response, ne
 
 export async function uploadFile(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { productId } = req.params;
-  const { location, key } = req.file as MulterFileWithLocation;
-  let url = '';
-
-  if (location) url = location;
-  else {
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const relativePath = req.file.filename;
-    url = `${baseUrl}/uploads/${relativePath}`;
-  }
-
   try {
+    if (!req.file) {
+      return res.status(httpStatus.BAD_REQUEST).send({ message: 'No file uploaded' });
+    }
+    const { location, key } = req.file as MulterFileWithLocation;
+    let url = '';
+
+    if (location) url = location;
+    else {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const relativePath = req.file.filename;
+      url = `${baseUrl}/uploads/${relativePath}`;
+    }
+
     const image = await productService.persistImage(Number(productId), url, key);
     return res.status(httpStatus.CREATED).send({ message: 'Image sent successfully!', data: { ...image } });
   } catch (error) {
